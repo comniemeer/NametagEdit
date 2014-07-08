@@ -9,27 +9,33 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 == Configuration
 When the plugin  starts for the first time, it will generate 3 configurable files. They are: "config.yml", "groups.yml" and "players.yml".
 
-=== config.yml:
+=== config.yml
 
 | Option  | Value  | Description |
-| ------- |:------:|------------:|
 | TabListDisabled | true/false | If enabled, NametagEdit will not alter a user's name in the tab. This can also be overriden with the function setPlayerListName(); |
 | MetricsEnabled  | true/false | If 'true', small amounts of data will be sent to MCstats.org so we can keep track of the plugin's popularity. |
 
-=== groups.yml:
+=== groups.yml
 
 Groups:
-  Moderator: // This is the 'key' or the thing to distinguish this group
-    Permission: nte.moderator // This is the permission required to have this nametag - it can be anything
-    Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended
-    Suffix: '&f'
+  
+  Moderator: // This is the 'key' or the thing to distinguish this group //
+    
+	Permission: nte.moderator // This is the permission required to have this nametag - it can be anything //
+    
+	Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //
+    
+	Suffix: '&f'
 
 === players.yml
 
 Players:
-  b5ccebaa-0623-4370-af73-0ec985dfa3b0: // This is the 'key' to identify the players
-    Name: sgtcazeyt // This is the friendly name of the player
-    Prefix: '&b' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended
+  b5ccebaa-0623-4370-af73-0ec985dfa3b0: // This is the 'key' to identify the players //
+    
+	Name: sgtcazeyt // This is the friendly name of the player //
+    
+	Prefix: '&b' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //
+   
     Suffix: '&c'
 	
 == FAQ
