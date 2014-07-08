@@ -25,7 +25,7 @@ public class NametagManager {
 	// Prefix to append to all team names (nothing to do with prefix/suffix)
 	private static final String TEAM_NAME_PREFIX = "NTE";
 
-	private static List<Integer> list = new ArrayList<>();
+	private static List<Integer> list = new ArrayList<Integer>();
 
 	private static HashMap<TeamInfo, List<String>> teams = new HashMap<>();
 

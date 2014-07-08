@@ -38,7 +38,7 @@ public class NTEHandler {
 
 		for (String s : plugin.groups.getConfigurationSection("Groups")
 				.getKeys(false)) {
-			List<String> tempData = new ArrayList<>();
+			List<String> tempData = new ArrayList<String>();
 			String prefix = plugin.groups.getString("Groups." + s + ".Prefix");
 			String suffix = plugin.groups.getString("Groups." + s + ".Suffix");
 			String permission = plugin.groups.getString("Groups." + s
@@ -58,7 +58,7 @@ public class NTEHandler {
 
 		for (String s : plugin.players.getConfigurationSection("Players")
 				.getKeys(false)) {
-			List<String> tempData = new ArrayList<>();
+			List<String> tempData = new ArrayList<String>();
 			String name = plugin.players.getString("Players." + s + ".Name");
 			String prefix = plugin.players
 					.getString("Players." + s + ".Prefix");
