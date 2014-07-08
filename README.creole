@@ -32,10 +32,8 @@ When the plugin  starts for the first time, it will generate 3 configurable file
 | MetricsEnabled  | true/false | If 'true', small amounts of data will be sent to MCstats.org so we can keep track of the plugin's popularity. |
 
 === groups.yml
-
+{{{
 Groups:
-
-{{{  
   Moderator: // This is the 'key' or the thing to distinguish this group //  
 	Permission: nte.moderator // This is the permission required to have this nametag - it can be anything //  
 	Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //  
