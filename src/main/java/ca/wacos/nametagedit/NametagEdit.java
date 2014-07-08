@@ -11,9 +11,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import ca.wacos.nametagedit.utils.FileUtils;
-import ca.wacos.nametagedit.utils.Metrics;
 
 /**
  * This is the main class for the NametagEdit server plugin.
