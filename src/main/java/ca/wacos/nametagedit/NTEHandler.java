@@ -73,7 +73,6 @@ public class NTEHandler {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void applyTags() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 
