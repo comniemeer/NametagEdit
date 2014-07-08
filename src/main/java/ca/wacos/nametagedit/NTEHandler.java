@@ -21,9 +21,9 @@ public class NTEHandler {
 		this.plugin = plugin;
 	}
 
-	public HashMap<String, List<String>> groupData = new HashMap<>();
-	public HashMap<String, List<String>> playerData = new HashMap<>();
-	public HashMap<String, String> permissions = new HashMap<>();
+	public HashMap<String, List<String>> groupData = new HashMap<String, List<String>>();
+	public HashMap<String, List<String>> playerData = new HashMap<String, List<String>>();
+	public HashMap<String, String> permissions = new HashMap<String, String>();
 
 	public void reload() {
 		plugin.reloadConfig();
