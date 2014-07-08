@@ -27,7 +27,7 @@ public class NametagManager {
 
 	private static List<Integer> list = new ArrayList<Integer>();
 
-	private static HashMap<TeamInfo, List<String>> teams = new HashMap<>();
+	private static HashMap<TeamInfo, List<String>> teams = new HashMap<TeamInfo, List<String>>();
 
 	private static void addToTeam(TeamInfo team, String player) {
 		removeFromTeam(player);
