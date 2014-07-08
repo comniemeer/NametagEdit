@@ -18,31 +18,30 @@ When the plugin  starts for the first time, it will generate 3 configurable file
 === groups.yml
 
 Groups:
-  
-  Moderator: // This is the 'key' or the thing to distinguish this group //
-    
-	Permission: nte.moderator // This is the permission required to have this nametag - it can be anything //
-    
-	Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //
-    
+
+```  
+  Moderator: // This is the 'key' or the thing to distinguish this group //  
+	Permission: nte.moderator // This is the permission required to have this nametag - it can be anything //  
+	Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //  
 	Suffix: '&f'
+```
 
 === players.yml
 
+```
 Players:
-  b5ccebaa-0623-4370-af73-0ec985dfa3b0: // This is the 'key' to identify the players //
-    
-	Name: sgtcazeyt // This is the friendly name of the player //
-    
+  b5ccebaa-0623-4370-af73-0ec985dfa3b0: // This is the 'key' to identify the players //   
+	Name: sgtcazeyt // This is the friendly name of the player //  
 	Prefix: '&b' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //
-   
     Suffix: '&c'
-	
+```
 == FAQ
 
 **My client crashes with the reason "Cannot remove from NTE #". Why is this?**
-Answer: Answer: Because of how scoreboards were implemented in Minecraft, a player cannot belong to two teams. Any two scoreboard plugins, whether through packets
+
+Due to how scoreboards were implemented in Minecraft, a player cannot belong to two teams. Any two scoreboard plugins, whether through packets
 or the bukkit scoreboard api - which are basically the same thing, that alter team prefixes/suffixes, will have conflicts. There is currently no way around this.
 
 **My prefixes/suffixes are incorrect. What's wrong?**
-Answer: This is likely to due to the structure of your permissions. Please ensure the correct groups inherit the correct permissions.
+
+This is likely to due to the structure of your permissions. Please ensure the correct groups inherit the correct permissions.
