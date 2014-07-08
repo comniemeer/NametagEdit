@@ -32,5 +32,4 @@ class TeamInfo {
 	String getName() {
 		return name;
 	}
-
 }

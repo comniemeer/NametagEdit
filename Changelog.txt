@@ -1,3 +1,19 @@
+v3.0
+
+@sgtcaze
+- Rewrote command class to be less redundant, easier to read, and have more features
+- Deleted PlayerLoader/GroupLoader, replace with NTEHandler
+- Deleted NametagUtils class, as most of the functions were for the PlayerLoader/GroupLoader classes
+- Deleted NametagHooKGM and NametagHookPEX because they are redundant, and support would
+never end (i.e. what about bPermissions, zPermissions, YAPP, BukkitPerms, SuperPerms etc.)
+- General cleanup, removed unused methods, switch to dependency injection for some classes
+rather than using static objects/variables
+- Deleted the updater class because of version conflicts with dev builds
+- Deleted NameFetcher class because we don't use it anymore
+- Edited pom.xml to reflect no more optional dependencies
+- Removed libs as we no longer use them
+- Removed Herobrine
+======================================
 v2.5.2
 
 @sgtcaze

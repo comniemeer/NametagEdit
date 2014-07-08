@@ -19,7 +19,8 @@ import org.bukkit.OfflinePlayer;
  * @author Levi Webb
  * 
  */
-class NametagManager {
+@SuppressWarnings("deprecation")
+public class NametagManager {
 
 	// Prefix to append to all team names (nothing to do with prefix/suffix)
 	private static final String TEAM_NAME_PREFIX = "NTE";
@@ -28,7 +29,6 @@ class NametagManager {
 
 	private static HashMap<TeamInfo, List<String>> teams = new HashMap<>();
 
-	@SuppressWarnings("deprecation")
 	private static void addToTeam(TeamInfo team, String player) {
 		removeFromTeam(player);
 		List<String> list = teams.get(team);
@@ -49,25 +49,12 @@ class NametagManager {
 		sendPacketsAddTeam(team);
 	}
 
-	@SuppressWarnings("unused")
-	private static boolean removeTeam(String name) {
-		for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
-			if (team.getName().equals(name)) {
-				removeTeam(team);
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private static void removeTeam(TeamInfo team) {
 		sendPacketsRemoveTeam(team);
 		teams.remove(team);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static TeamInfo removeFromTeam(String player) {
-
 		for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
 			List<String> list = teams.get(team);
 			for (String p : list.toArray(new String[list.size()])) {
@@ -89,7 +76,6 @@ class NametagManager {
 	}
 
 	private static TeamInfo getTeam(String name) {
-
 		for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
 			if (team.getName().equals(name)) {
 				return team;
@@ -165,7 +151,6 @@ class NametagManager {
 		TeamInfo t = get(prefix, suffix);
 
 		addToTeam(t, player);
-
 	}
 
 	/**
@@ -183,8 +168,7 @@ class NametagManager {
 	 * @param suffix
 	 *            the suffix to set for the given player
 	 */
-	static void overlap(String player, String prefix, String suffix) {
-
+	public static void overlap(String player, String prefix, String suffix) {
 		if (prefix == null) {
 			prefix = "";
 		}
@@ -204,7 +188,6 @@ class NametagManager {
 	 *            the specified player
 	 */
 	static void clear(String player) {
-
 		removeFromTeam(player);
 	}
 
@@ -295,7 +278,6 @@ class NametagManager {
 	 * @return a team with the corresponding prefix/suffix
 	 */
 	private static TeamInfo get(String prefix, String suffix) {
-
 		update();
 
 		for (int t : list.toArray(new Integer[list.size()])) {
@@ -339,7 +321,6 @@ class NametagManager {
 	 * Removes any teams that do not have any players in them.
 	 */
 	private static void update() {
-
 		for (TeamInfo team : getTeams()) {
 			int entry = -1;
 			try {
@@ -377,7 +358,7 @@ class NametagManager {
 			}
 		} catch (Exception e) {
 			System.out
-					.println("Failed to send packet for player (Packet209SetScoreboardTeam) : ");
+					.println("[NametagEdit] Failed to send packet for player.");
 			e.printStackTrace();
 		}
 	}
@@ -400,7 +381,7 @@ class NametagManager {
 			}
 		} catch (Exception e) {
 			System.out
-					.println("Failed to send packet for player (Packet209SetScoreboardTeam) : ");
+					.println("[NametagEdit] Failed to send packet for player.");
 			e.printStackTrace();
 		}
 	}
@@ -412,7 +393,6 @@ class NametagManager {
 	 *            the team to remove
 	 */
 	private static void sendPacketsRemoveTeam(TeamInfo team) {
-
 		boolean cont = false;
 		for (TeamInfo t : getTeams()) {
 			if (t == team) {
@@ -434,7 +414,7 @@ class NametagManager {
 			}
 		} catch (Exception e) {
 			System.out
-					.println("Failed to send packet for player (Packet209SetScoreboardTeam) : ");
+					.println("[NametagEdit] Failed to send packet for player.");
 			e.printStackTrace();
 		}
 	}
@@ -448,7 +428,6 @@ class NametagManager {
 	 *            the player to add
 	 */
 	private static void sendPacketsAddToTeam(TeamInfo team, String player) {
-
 		boolean cont = false;
 		for (TeamInfo t : getTeams()) {
 			if (t == team) {
@@ -468,7 +447,7 @@ class NametagManager {
 			}
 		} catch (Exception e) {
 			System.out
-					.println("Failed to send packet for player (Packet209SetScoreboardTeam) : ");
+					.println("[NametagEdit] Failed to send packet for player.");
 			e.printStackTrace();
 		}
 	}
@@ -483,7 +462,6 @@ class NametagManager {
 	 *            the player to remove
 	 */
 	private static void sendPacketsRemoveFromTeam(TeamInfo team, String player) {
-
 		boolean cont = false;
 		for (TeamInfo t : getTeams()) {
 			if (t == team) {
@@ -509,7 +487,7 @@ class NametagManager {
 			}
 		} catch (Exception e) {
 			System.out
-					.println("Failed to send packet for player (Packet209SetScoreboardTeam) : ");
+					.println("[NametagEdit] Failed to send packet for player.");
 			e.printStackTrace();
 		}
 	}

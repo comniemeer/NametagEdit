@@ -1,24 +1,19 @@
 package ca.wacos.nametagedit;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import ca.wacos.nametagedit.utils.FileUtils;
 import ca.wacos.nametagedit.utils.Metrics;
-import ca.wacos.nametagedit.utils.NameFetcher;
-import ca.wacos.nametagedit.utils.Updater;
 
 /**
  * This is the main class for the NametagEdit server plugin.
@@ -28,60 +23,57 @@ import ca.wacos.nametagedit.utils.Updater;
  */
 public class NametagEdit extends JavaPlugin {
 
-	static LinkedHashMap<String, LinkedHashMap<String, String>> groups = null;
-	static LinkedHashMap<String, LinkedHashMap<String, String>> config = null;
-	static boolean tabListDisabled = false;
-	static boolean deathMessageEnabled = false;
-	static boolean checkForUpdatesEnabled = false;
-	static boolean consolePrintEnabled = false;
-	public static GroupManager groupManager;
-	static NametagEdit plugin = null;
-	public static String permissions = "";
-	public static String name = "";
-	public static String type = "";
-	public static String version = "";
-	public static String link = "";
+	public FileConfiguration groups, players;
+	public File groupsFile, playersFile;
 
-	static Updater updater;
+	static NametagEdit plugin;
 
-	/**
-	 * Called when the plugin is loaded, registering command executors and event
-	 * handlers, intializes the {@link ca.wacos.nametagedit.NametagManager}
-	 * class, and loads plugin information.
-	 * 
-	 * @see #load()
-	 */
+	public boolean tabListDisabled = false;
+
+	private NametagManager nametagManager;
+	private NTEHandler nteHandler;
+	private FileUtils fileUtils;
+
 	@Override
 	public void onEnable() {
 
-		final Logger log = getLogger();
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new NametagEventHandler(this), this);
 
-		PluginManager pm = this.getServer().getPluginManager();
-		plugin = (NametagEdit) pm.getPlugin("NametagEdit");
+		getCommand("ne").setExecutor(new NametagCommand(this));
+
+		plugin = this;
+
+		fileUtils = new FileUtils(this);
+
+		nametagManager = new NametagManager();
+		nteHandler = new NTEHandler(this);
+
 		NametagManager.load();
-		this.getServer().getPluginManager()
-				.registerEvents(new NametagEventHandler(), this);
-		getCommand("ne").setExecutor(new NametagCommand());
-		load();
 
 		saveDefaultConfig();
 
-		if (getConfig().getBoolean("CheckForUpdates")) {
+		groupsFile = new File(getDataFolder(), "groups.yml");
+		playersFile = new File(getDataFolder(), "players.yml");
 
-			updater = new Updater(this, 54012, this.getFile(),
-					Updater.UpdateType.NO_DOWNLOAD, false);
-			name = updater.getLatestName(); // Get the latest name
-			version = updater.getLatestGameVersion(); // Get the latest game
-														// version
-			type = updater.getLatestType(); // Get the latest file's type
-			link = updater.getLatestFileLink(); // Get the latest link
-
-			if (Updater.UpdateResult.UPDATE_AVAILABLE != null) {
-				System.out.println("An update is available: " + name + ", a "
-						+ type + " for " + version + " available at " + link);
-				System.out.println("Update by executing: /ne update");
-			}
+		try {
+			fileUtils.run();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		groups = new YamlConfiguration();
+		players = new YamlConfiguration();
+
+		fileUtils.loadYamls();
+
+		nteHandler.loadGroups();
+		nteHandler.loadPlayers();
+		nteHandler.applyTags();
+
+		startup();
+
+		tabListDisabled = getConfig().getBoolean("TabListDisabled");
 
 		if (getConfig().getBoolean("MetricsEnabled")) {
 			try {
@@ -91,86 +83,6 @@ public class NametagEdit extends JavaPlugin {
 				// Failed to submit the stats :-(
 			}
 		}
-
-		this.getServer().getScheduler()
-				.scheduleSyncDelayedTask(this, new Runnable() {
-
-					@Override
-					public void run() {
-						if (plugin.getServer().getPluginManager()
-								.getPlugin("PermissionsEx") != null) {
-							plugin.getServer()
-									.getPluginManager()
-									.registerEvents(new NametagHookPEX(),
-											plugin);
-							log.info("Hooked into PermissionsEx!");
-							permissions = "pex";
-						}
-						if (plugin.getServer().getPluginManager()
-								.getPlugin("GroupManager") != null) {
-							plugin.getServer()
-									.getPluginManager()
-									.registerEvents(new NametagHookGM(), plugin);
-							if (groupManager == null) {
-								Plugin perms = plugin.getServer()
-										.getPluginManager()
-										.getPlugin("GroupManager");
-								if (perms != null && perms.isEnabled()) {
-									groupManager = (GroupManager) perms;
-								}
-							}
-							log.info("Hooked into GroupManager!");
-							permissions = "gm";
-						}
-						LinkedHashMap<String, LinkedHashMap<String, String>> playerData2 = PlayerLoader
-								.load(plugin);
-						if (playerData2 != null) {
-							for (String playerName : playerData2.keySet()) {
-								LinkedHashMap<String, String> playerData = playerData2
-										.get(playerName);
-
-								String prefix = playerData.get("prefix");
-								String suffix = playerData.get("suffix");
-								if (prefix != null) {
-									prefix = NametagUtils.formatColors(prefix);
-								}
-								if (suffix != null) {
-									suffix = NametagUtils.formatColors(suffix);
-								}
-								if (GroupLoader.DEBUG) {
-									if (NametagEdit.consolePrintEnabled) {
-										System.out
-												.println("Setting prefix/suffix for "
-														+ playerName
-														+ ": "
-														+ prefix
-														+ ", "
-														+ suffix + " (user)");
-									}
-								}
-								NameFetcher fetcher = new NameFetcher(Arrays
-										.asList(UUID.fromString(playerName)));
-								Map<UUID, String> response = null;
-								try {
-									response = fetcher.call();
-									NametagManager.overlap(
-											response.get(
-													UUID.fromString(playerName))
-													.toString(), prefix, suffix);
-								} catch (Exception e) {
-
-									Bukkit.getLogger()
-											.warning(
-													"Unable to set nametag for UUID "
-															+ UUID.fromString(playerName));
-									Bukkit.getLogger().warning(e.getMessage());
-									e.printStackTrace();
-								}
-
-							}
-						}
-					}
-				});
 	}
 
 	@Override
@@ -178,104 +90,35 @@ public class NametagEdit extends JavaPlugin {
 		NametagManager.reset();
 	}
 
-	public static void runUpdate() {
-		updater = new Updater(plugin, 54012, plugin.getFile(),
-				Updater.UpdateType.DEFAULT, true);
+	public NametagManager getNametagManager() {
+		return nametagManager;
 	}
 
-	/**
-	 * Loads groups, players, configurations, and refreshes information for
-	 * in-game players.
-	 */
-	void load() {
+	public NTEHandler getNTEHandler() {
+		return nteHandler;
+	}
 
-		groups = GroupLoader.load(this);
+	public FileUtils getFileUtils() {
+		return fileUtils;
+	}
 
-		NametagEdit.tabListDisabled = getConfig().getBoolean("TabListDisabled");
-		NametagEdit.deathMessageEnabled = getConfig().getBoolean(
-				"DeathMessageEnabled");
-		NametagEdit.checkForUpdatesEnabled = getConfig().getBoolean(
-				"CheckForUpdates");
-		NametagEdit.consolePrintEnabled = getConfig().getBoolean(
-				"ConsolePrintEnabled");
+	private void startup() {
+		File f = new File(plugin.getDataFolder() + File.separator + "INFO.txt");
 
-		this.getServer().getScheduler()
-				.scheduleSyncDelayedTask(this, new Runnable() {
-					@Override
-					public void run() {
-						LinkedHashMap<String, LinkedHashMap<String, String>> players = PlayerLoader
-								.load(plugin);
-						Player[] onlinePlayers = Bukkit.getOnlinePlayers();
-
-						for (Player p : onlinePlayers) {
-
-							NametagManager.clear(p.getName());
-
-							boolean setGroup = true;
-
-							for (String key : players.keySet().toArray(
-									new String[players.keySet().size()])) {
-								if (p.getUniqueId().toString().equals(key)) {
-
-									String prefix = players.get(
-											p.getUniqueId().toString()).get(
-											"prefix");
-									String suffix = players.get(
-											p.getUniqueId().toString()).get(
-											"suffix");
-									if (prefix != null) {
-										prefix = NametagUtils
-												.formatColors(prefix);
-									}
-									if (suffix != null) {
-										suffix = NametagUtils
-												.formatColors(suffix);
-									}
-									NametagManager.overlap(p.getName(), prefix,
-											suffix);
-
-									setGroup = false;
-								}
-							}
-							if (setGroup) {
-								for (String key : groups.keySet().toArray(
-										new String[groups.keySet().size()])) {
-									Permission p2 = new Permission(key,
-											PermissionDefault.FALSE);
-									if (p.hasPermission(p2)) {
-										String prefix = groups.get(key).get(
-												"prefix");
-										String suffix = groups.get(key).get(
-												"suffix");
-										if (prefix != null) {
-											prefix = NametagUtils
-													.formatColors(prefix);
-										}
-										if (suffix != null) {
-											suffix = NametagUtils
-													.formatColors(suffix);
-										}
-										NametagCommand.setNametagSoft(
-												p.getName(),
-												prefix,
-												suffix,
-												NametagChangeEvent.NametagChangeReason.GROUP_NODE);
-
-									}
-								}
-							}
-							if (NametagEdit.tabListDisabled) {
-								String str = "§f" + p.getName();
-								String tab = "";
-								for (int t = 0; t < str.length() && t < 16; t++) {
-									tab += str.charAt(t);
-								}
-								p.setPlayerListName(tab);
-							} else {
-								p.setPlayerListName(p.getName());
-							}
-						}
-					}
-				});
+		if (!f.exists()) {
+			try {
+				InputStream in = plugin.getResource("INFO.txt");
+				OutputStream out = new FileOutputStream(f);
+				byte[] buf = new byte[1024];
+				int len;
+				while ((len = in.read(buf)) > 0) {
+					out.write(buf, 0, len);
+				}
+				out.close();
+				in.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

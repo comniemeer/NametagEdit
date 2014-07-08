@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 /**
  * A small wrapper for the PacketPlayOutScoreboardTeam packet.
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 class PacketPlayOut {
 
 	Object packet;
@@ -48,7 +49,6 @@ class PacketPlayOut {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	PacketPlayOut(String name, String prefix, String suffix,
 			Collection players, int paramInt) throws ClassNotFoundException,
 			IllegalAccessException, InstantiationException,
@@ -70,7 +70,6 @@ class PacketPlayOut {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	PacketPlayOut(String name, Collection players, int paramInt)
 			throws ClassNotFoundException, IllegalAccessException,
 			InstantiationException, NoSuchMethodException,
@@ -111,7 +110,6 @@ class PacketPlayOut {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void addAll(Collection<?> col) throws NoSuchFieldException,
 			IllegalAccessException {
 		Field f = packet.getClass().getDeclaredField("e");

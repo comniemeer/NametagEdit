@@ -1,16 +1,9 @@
 package ca.wacos.nametagedit;
 
-import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
-import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeType;
-import static ca.wacos.nametagedit.NametagEdit.permissions;
-
 import org.bukkit.Bukkit;
 
-import java.util.LinkedHashMap;
-
-import org.bukkit.entity.Player;
-
-import ru.tehkode.permissions.bukkit.PermissionsEx;
+import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
+import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeType;
 
 /**
  * This API class is used to set prefixes and suffixes at a high level, much
@@ -32,17 +25,16 @@ public class NametagAPI {
 	 *            the prefix to use
 	 */
 	public static void setPrefix(final String player, final String prefix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
-								getPrefix(player), getSuffix(player), prefix,
-								"", NametagChangeType.SOFT,
+								getPrefix(player), getSuffix(player),
+								trim(prefix), "", NametagChangeType.SOFT,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.update(player, prefix, "");
-							PlayerLoader.update(player, prefix, "");
+							NametagManager.update(player, trim(prefix), "");
 						}
 					}
 				});
@@ -59,17 +51,16 @@ public class NametagAPI {
 	 *            the suffix to use
 	 */
 	public static void setSuffix(final String player, final String suffix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
 								getPrefix(player), getSuffix(player), "",
-								suffix, NametagChangeType.SOFT,
+								trim(suffix), NametagChangeType.SOFT,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.update(player, "", suffix);
-							PlayerLoader.update(player, "", suffix);
+							NametagManager.update(player, "", trim(suffix));
 						}
 					}
 				});
@@ -91,17 +82,18 @@ public class NametagAPI {
 	 */
 	public static void setNametagHard(final String player, final String prefix,
 			final String suffix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
-								getPrefix(player), getSuffix(player), prefix,
-								suffix, NametagChangeType.HARD,
+								getPrefix(player), getSuffix(player),
+								trim(prefix), trim(suffix),
+								NametagChangeType.HARD,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.overlap(player, prefix, suffix);
-							PlayerLoader.overlap(player, prefix, suffix);
+							NametagManager.overlap(player, trim(prefix),
+									trim(suffix));
 						}
 					}
 				});
@@ -122,17 +114,18 @@ public class NametagAPI {
 	 */
 	public static void setNametagSoft(final String player, final String prefix,
 			final String suffix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
-								getPrefix(player), getSuffix(player), prefix,
-								suffix, NametagChangeType.SOFT,
+								getPrefix(player), getSuffix(player),
+								trim(prefix), trim(suffix),
+								NametagChangeType.SOFT,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.update(player, prefix, suffix);
-							PlayerLoader.update(player, prefix, suffix);
+							NametagManager.update(player, trim(prefix),
+									trim(suffix));
 						}
 					}
 				});
@@ -159,16 +152,18 @@ public class NametagAPI {
 	 */
 	public static void updateNametagHard(final String player,
 			final String prefix, final String suffix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
-								getPrefix(player), getSuffix(player), prefix,
-								suffix, NametagChangeType.HARD,
+								getPrefix(player), getSuffix(player),
+								trim(prefix), trim(suffix),
+								NametagChangeType.HARD,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.overlap(player, prefix, suffix);
+							NametagManager.overlap(player, trim(prefix),
+									trim(suffix));
 						}
 					}
 				});
@@ -194,134 +189,18 @@ public class NametagAPI {
 	 */
 	public static void updateNametagSoft(final String player,
 			final String prefix, final String suffix) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.plugin,
+				new Runnable() {
 					public void run() {
 						NametagChangeEvent e = new NametagChangeEvent(player,
-								getPrefix(player), getSuffix(player), prefix,
-								suffix, NametagChangeType.SOFT,
+								getPrefix(player), getSuffix(player),
+								trim(prefix), trim(suffix),
+								NametagChangeType.SOFT,
 								NametagChangeReason.CUSTOM);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 						if (!e.isCancelled()) {
-							NametagManager.update(player, prefix, suffix);
-						}
-					}
-				});
-	}
-
-	/**
-	 * Clears the given player's custom prefix and suffix and sets it to the
-	 * group node that applies to that player. </br></br> This method schedules
-	 * a task with the request to change the player's name to prevent it from
-	 * clashing with the PlayerJoinEvent in NametagEdit.
-	 * 
-	 * @param player
-	 *            the player to reset
-	 */
-	public static void resetNametag(final String player) {
-		NametagEdit.plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(NametagEdit.plugin, new Runnable() {
-					@SuppressWarnings("deprecation")
-					public void run() {
-
-						NametagManager.clear(player);
-						PlayerLoader.removePlayer(player, null);
-
-						Player targetPlayer = Bukkit.getPlayerExact(player);
-						if (targetPlayer != null) {
-
-							for (String key : NametagEdit.groups.keySet()
-									.toArray(
-											new String[NametagEdit.groups
-													.keySet().size()])) {
-								if (targetPlayer.hasPermission(key)) {
-									String prefix = NametagEdit.groups.get(key)
-											.get("prefix");
-									String suffix = NametagEdit.groups.get(key)
-											.get("suffix");
-									if (prefix != null) {
-										prefix = NametagUtils
-												.formatColors(prefix);
-									}
-									if (suffix != null) {
-										suffix = NametagUtils
-												.formatColors(suffix);
-									}
-									NametagCommand.setNametagHard(player,
-											prefix, suffix,
-											NametagChangeReason.GROUP_NODE);
-
-									break;
-								}
-							}
-						} else {
-							switch (permissions) {
-							case "gm":
-								for (String key : NametagEdit.groups.keySet()
-										.toArray(
-												new String[NametagEdit.groups
-														.keySet().size()])) {
-									if (NametagEdit.groupManager
-											.getWorldsHolder()
-											.getWorldPermissionsByPlayerName(
-													player)
-											.permission(player, key)) {
-										String prefix = NametagEdit.groups.get(
-												key).get("prefix");
-										String suffix = NametagEdit.groups.get(
-												key).get("suffix");
-										if (prefix != null) {
-											prefix = NametagUtils
-													.formatColors(prefix);
-										}
-										if (suffix != null) {
-											suffix = NametagUtils
-													.formatColors(suffix);
-										}
-										NametagCommand.setNametagHard(player,
-												prefix, suffix,
-												NametagChangeReason.GROUP_NODE);
-
-										break;
-									}
-								}
-
-								break;
-							case "pex":
-								for (String key : NametagEdit.groups.keySet()
-										.toArray(
-												new String[NametagEdit.groups
-														.keySet().size()])) {
-									for (String perm : PermissionsEx.getUser(
-											player).getPermissions(player)) {
-										if (perm == null ? key == null : perm
-												.equals(key)) {
-											String prefix = NametagEdit.groups
-													.get(key).get("prefix");
-											String suffix = NametagEdit.groups
-													.get(key).get("suffix");
-											if (prefix != null) {
-												prefix = NametagUtils
-														.formatColors(prefix);
-											}
-											if (suffix != null) {
-												suffix = NametagUtils
-														.formatColors(suffix);
-											}
-											NametagCommand
-													.setNametagHard(
-															player,
-															prefix,
-															suffix,
-															NametagChangeReason.GROUP_NODE);
-
-											break;
-										}
-									}
-								}
-								break;
-
-							}
+							NametagManager.update(player, trim(prefix),
+									trim(suffix));
 						}
 					}
 				});
@@ -360,35 +239,14 @@ public class NametagAPI {
 		return NametagManager.getFormattedName(player);
 	}
 
-	/**
-	 * Returns the plugin version for NametagEdit
-	 * 
-	 * @return the plugin version string
-	 */
-	public static String getVersion() {
-		return NametagEdit.plugin.getDescription().getVersion();
-	}
-
-	/**
-	 * Returns whether the player has a nametag saved for him/her, regardless of
-	 * group nodes.
-	 * 
-	 * @param player
-	 *            the player to check
-	 * @return true if there is a custom nametag set, false otherwise.
-	 */
-	public static boolean hasCustomNametag(String player) {
-		LinkedHashMap<String, String> map = PlayerLoader.getPlayer(player);
-		if (map == null) {
-			return false;
+	static String trim(String input) {
+		if (input.length() > 16) {
+			String temp = input;
+			input = "";
+			for (int t = 0; t < 16; t++) {
+				input += temp.charAt(t);
+			}
 		}
-		String prefix = map.get("prefix");
-		String suffix = map.get("suffix");
-		if ((prefix == null || prefix.isEmpty())
-				&& (suffix == null || suffix.isEmpty())) {
-			return false;
-		} else {
-			return true;
-		}
+		return input;
 	}
 }

@@ -1,2 +1,0 @@
-Known Bugs:
-- Incompatibility with plugins that alter scoreboards/displaynames frequently

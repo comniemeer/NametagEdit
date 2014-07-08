@@ -4,7 +4,7 @@
 
     <groupId>com.wacos</groupId>
     <artifactId>NametagEdit</artifactId>
-    <version>2.4</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
 
     <name>NametagEdit</name>
@@ -46,20 +46,6 @@
             <artifactId>bukkit</artifactId>
             <version>LATEST</version>
 		</dependency>
-		<dependency>
-            <groupId>ru.tekode</groupId>
-            <artifactId>PermissionsEX</artifactId>
-            <version>1.21</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/PermissionsEX.jar</systemPath>
-       </dependency>
-       <dependency>
-            <groupId>org.anjocaido</groupId>
-            <artifactId>GroupManager</artifactId>
-            <version>2.12.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/EssentialsGroupManager.jar</systemPath>
-       </dependency>
     </dependencies>
     <repositories>
         <repository>

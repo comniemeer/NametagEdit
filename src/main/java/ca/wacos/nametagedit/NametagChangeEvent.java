@@ -190,7 +190,6 @@ public class NametagChangeEvent extends Event implements Cancellable {
 	 * Represents the type of change a player's nametag can undergo
 	 */
 	public enum NametagChangeType {
-
 		HARD, SOFT
 	}
 
@@ -198,7 +197,6 @@ public class NametagChangeEvent extends Event implements Cancellable {
 	 * Represents the reason or cause for the change of a player's nametag.
 	 */
 	public enum NametagChangeReason {
-
 		SET_PREFIX, SET_SUFFIX, GROUP_NODE, CUSTOM
 	}
 }
