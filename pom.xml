@@ -15,7 +15,7 @@
     </properties>
   
     <build>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>clean package install</defaultGoal>
         <finalName>NametagEdit</finalName>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
@@ -35,7 +35,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <showDeprecation>false</showDeprecation>
                 </configuration>
             </plugin>
         </plugins>
