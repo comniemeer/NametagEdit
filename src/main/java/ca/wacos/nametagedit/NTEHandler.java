@@ -21,9 +21,9 @@ public class NTEHandler {
 		this.plugin = plugin;
 	}
 
-	public HashMap<String, List<String>> groupData = new HashMap<String, List<String>>();
-	public HashMap<String, List<String>> playerData = new HashMap<String, List<String>>();
-	public HashMap<String, String> permissions = new HashMap<String, String>();
+	private HashMap<String, List<String>> groupData = new HashMap<>();
+	private HashMap<String, List<String>> playerData = new HashMap<>();
+	private HashMap<String, String> permissions = new HashMap<>();
 
 	public void reload() {
 		plugin.reloadConfig();
@@ -38,7 +38,7 @@ public class NTEHandler {
 
 		for (String s : plugin.groups.getConfigurationSection("Groups")
 				.getKeys(false)) {
-			List<String> tempData = new ArrayList<String>();
+			List<String> tempData = new ArrayList<>();
 			String prefix = plugin.groups.getString("Groups." + s + ".Prefix");
 			String suffix = plugin.groups.getString("Groups." + s + ".Suffix");
 			String permission = plugin.groups.getString("Groups." + s
@@ -58,7 +58,7 @@ public class NTEHandler {
 
 		for (String s : plugin.players.getConfigurationSection("Players")
 				.getKeys(false)) {
-			List<String> tempData = new ArrayList<String>();
+			List<String> tempData = new ArrayList<>();
 			String name = plugin.players.getString("Players." + s + ".Name");
 			String prefix = plugin.players
 					.getString("Players." + s + ".Prefix");
@@ -115,7 +115,6 @@ public class NTEHandler {
 	}
 
 	public void applyTagToPlayer(Player p) {
-
 		String uuid = p.getUniqueId().toString();
 
 		if (playerData.containsKey(uuid)) {

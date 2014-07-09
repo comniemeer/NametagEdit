@@ -8,6 +8,12 @@ import java.io.OutputStream;
 
 import ca.wacos.nametagedit.NametagEdit;
 
+/**
+ * This class is responsible for loading/writing/saving files
+ * 
+ * @author sgtcaze
+ * 
+ */
 public class FileUtils {
 
 	private NametagEdit plugin;

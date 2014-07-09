@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
@@ -18,40 +17,39 @@ import ca.wacos.nametagedit.utils.FileUtils;
 /**
  * This is the main class for the NametagEdit server plugin.
  * 
- * @author Levi Webb
+ * @author Levi Webb Heavily edited by @sgtcaze
  * 
  */
 public class NametagEdit extends JavaPlugin {
 
+	static NametagEdit plugin;
+
+	private FileUtils fileUtils;
+	private NTEHandler nteHandler;
+	private NametagManager nametagManager;
+
 	public FileConfiguration groups, players;
 	public File groupsFile, playersFile;
 
-	static NametagEdit plugin;
-
 	public boolean tabListDisabled = false;
-
-	private NametagManager nametagManager;
-	private NTEHandler nteHandler;
-	private FileUtils fileUtils;
 
 	@Override
 	public void onEnable() {
 
-		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new NametagEventHandler(this), this);
+		Bukkit.getPluginManager().registerEvents(new NametagEventHandler(this),
+				this);
 
 		getCommand("ne").setExecutor(new NametagCommand(this));
 
 		plugin = this;
 
 		fileUtils = new FileUtils(this);
-
 		nametagManager = new NametagManager();
 		nteHandler = new NTEHandler(this);
 
-		NametagManager.load();
-
 		saveDefaultConfig();
+
+		NametagManager.load();
 
 		groupsFile = new File(getDataFolder(), "groups.yml");
 		playersFile = new File(getDataFolder(), "players.yml");

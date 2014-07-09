@@ -26,7 +26,6 @@ class PacketPlayOut {
 
 	static {
 		try {
-
 			version = Bukkit.getServer().getClass().getPackage().getName()
 					.split("\\.")[3];
 			packetType = Class.forName(getPacketTeamClasspath());

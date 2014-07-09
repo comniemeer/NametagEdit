@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * This class is responsible for handling various events in the server.
  * 
- * @author Levi Webb
+ * @author Levi Webb Heavily edited by @sgtcaze
  * 
  */
 class NametagEventHandler implements Listener {

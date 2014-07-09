@@ -13,7 +13,7 @@ import ca.wacos.nametagedit.utils.UUIDFetcher;
 /**
  * This class is responsible for handling the /ne command.
  * 
- * @author Levi Webb
+ * @author Levi Webb Heavily edited by @sgtcaze
  * 
  */
 public class NametagCommand implements CommandExecutor {
@@ -187,7 +187,7 @@ public class NametagCommand implements CommandExecutor {
 	 * @param reason
 	 *            the reason for setting the nametag
 	 */
-	static void setNametagHard(String player, String prefix, String suffix,
+	void setNametagHard(String player, String prefix, String suffix,
 			NametagChangeEvent.NametagChangeReason reason) {
 		NametagChangeEvent e = new NametagChangeEvent(player,
 				NametagAPI.getPrefix(player), NametagAPI.getSuffix(player),

@@ -115,7 +115,6 @@ public class NametagManager {
 				entry = Integer.parseInt(t.getName());
 			} catch (Exception e) {
 			}
-			;
 			if (entry != -1) {
 				list.add(entry);
 			}
@@ -143,6 +142,7 @@ public class NametagManager {
 			prefix = getPrefix(player);
 
 		}
+
 		if (suffix == null || suffix.isEmpty()) {
 			suffix = getSuffix(player);
 
@@ -172,6 +172,7 @@ public class NametagManager {
 		if (prefix == null) {
 			prefix = "";
 		}
+
 		if (suffix == null) {
 			suffix = "";
 		}
@@ -327,7 +328,6 @@ public class NametagManager {
 				entry = Integer.parseInt(team.getName());
 			} catch (Exception e) {
 			}
-			;
 			if (entry != -1) {
 				if (getTeamPlayers(team).length == 0) {
 					removeTeam(team);
@@ -346,7 +346,6 @@ public class NametagManager {
 	 */
 	static void sendTeamsToPlayer(Player p) {
 		try {
-
 			for (TeamInfo team : getTeams()) {
 				PacketPlayOut mod = new PacketPlayOut(team.getName(),
 						team.getPrefix(), team.getSuffix(),
@@ -370,9 +369,7 @@ public class NametagManager {
 	 *            the team to add
 	 */
 	private static void sendPacketsAddTeam(TeamInfo team) {
-
 		try {
-
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				PacketPlayOut mod = new PacketPlayOut(team.getName(),
 						team.getPrefix(), team.getSuffix(),
