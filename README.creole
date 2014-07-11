@@ -14,6 +14,11 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 | nte | clear <player> | Clears the prefix and suffix for a player |
 | nte | prefix/suffix <new> | Sets the prefix or suffix for a player |
 
+=== Example Usage
+Suppose we wish to have a nametag like: [Admin] sgtcazeyt
+The command would be: /nte prefix sgtcazeyt '[Admin] '
+The ' ' characters will be automatically removed, and allow you to have spaces
+
 == Permissions
 
 | Permission | Description |
@@ -32,6 +37,8 @@ When the plugin  starts for the first time, it will generate 3 configurable file
 | MetricsEnabled  | true/false | If 'true', small amounts of data will be sent to MCstats.org so we can keep track of the plugin's popularity. |
 
 === groups.yml
+When arranging your groups.yml, please have the order be ascending. Meaning, have your lowest group at the top (let's say default) and your highest group (let's say owner) at the bottom.
+
 {{{
 Groups:
   Moderator: // This is the 'key' or the thing to distinguish this group //  

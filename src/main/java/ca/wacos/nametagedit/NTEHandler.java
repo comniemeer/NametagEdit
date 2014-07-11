@@ -128,11 +128,11 @@ public class NTEHandler {
 
 				if (p.hasPermission(temp.get(2))) {
 					permission = temp.get(2);
-					break;
 				}
 			}
 
 			String group = permissions.get(permission);
+						
 			List<String> temp = groupData.get(group);
 
 			if (temp != null) {

@@ -1,11 +1,15 @@
 package ca.wacos.nametagedit;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.google.common.base.Joiner;
 
 import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
 import ca.wacos.nametagedit.utils.UUIDFetcher;
@@ -79,7 +83,7 @@ public class NametagCommand implements CommandExecutor {
 					plugin.getFileUtils().saveYamls();
 				}
 			}
-		} else if (args.length == 3) {
+		} else if (args.length > 2) {
 
 			if (!sender.hasPermission("nametagedit.edittags")) {
 				sender.sendMessage("§cYou can only edit your own nametag.");
@@ -87,11 +91,13 @@ public class NametagCommand implements CommandExecutor {
 			}
 
 			final String targetName = args[1];
+			
+			String oper = Joiner.on(" ").join(Arrays.copyOfRange(args, 2, args.length)).replaceAll("'", "");
 
 			if (args[0].equalsIgnoreCase("prefix")) {
-				setType(targetName, "Prefix", args[2]);
+				setType(targetName, "Prefix", oper);
 			} else if (args[0].equalsIgnoreCase("suffix")) {
-				setType(targetName, "Suffix", args[2]);
+				setType(targetName, "Suffix", oper);
 			}
 		}
 		return true;
