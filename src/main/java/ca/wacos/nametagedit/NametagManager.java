@@ -1,10 +1,12 @@
 package ca.wacos.nametagedit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +44,17 @@ public class NametagManager {
 				sendPacketsAddToTeam(team, p2.getName());
 			}
 		}
+	}
+
+	// This is a workaround for the deprecated getOnlinePlayers(). Credit to
+	// @Goblom for suggesting
+	public static List<Player> getOnline() {
+		List<Player> list = new ArrayList<>();
+
+		for (World world : Bukkit.getWorlds()) {
+			list.addAll(world.getPlayers());
+		}
+		return Collections.unmodifiableList(list);
 	}
 
 	private static void register(TeamInfo team) {
@@ -370,11 +383,14 @@ public class NametagManager {
 	 */
 	private static void sendPacketsAddTeam(TeamInfo team) {
 		try {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				PacketPlayOut mod = new PacketPlayOut(team.getName(),
-						team.getPrefix(), team.getSuffix(),
-						new ArrayList<String>(), 0);
-				mod.sendToPlayer(p);
+
+			for (Player p : getOnline()) {
+				if (p != null) {
+					PacketPlayOut mod = new PacketPlayOut(team.getName(),
+							team.getPrefix(), team.getSuffix(),
+							new ArrayList<String>(), 0);
+					mod.sendToPlayer(p);
+				}
 			}
 		} catch (Exception e) {
 			System.out
@@ -402,12 +418,13 @@ public class NametagManager {
 
 		try {
 
-			for (Player p : Bukkit.getOnlinePlayers()) {
-
-				PacketPlayOut mod = new PacketPlayOut(team.getName(),
-						team.getPrefix(), team.getSuffix(),
-						new ArrayList<String>(), 1);
-				mod.sendToPlayer(p);
+			for (Player p : getOnline()) {
+				if (p != null) {
+					PacketPlayOut mod = new PacketPlayOut(team.getName(),
+							team.getPrefix(), team.getSuffix(),
+							new ArrayList<String>(), 1);
+					mod.sendToPlayer(p);
+				}
 			}
 		} catch (Exception e) {
 			System.out
@@ -436,11 +453,12 @@ public class NametagManager {
 		}
 
 		try {
-
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				PacketPlayOut mod = new PacketPlayOut(team.getName(),
-						Arrays.asList(player), 3);
-				mod.sendToPlayer(p);
+			for (Player p : getOnline()) {
+				if (p != null) {
+					PacketPlayOut mod = new PacketPlayOut(team.getName(),
+							Arrays.asList(player), 3);
+					mod.sendToPlayer(p);
+				}
 			}
 		} catch (Exception e) {
 			System.out
@@ -474,13 +492,13 @@ public class NametagManager {
 		}
 
 		try {
+			for (Player p : getOnline()) {
+				if (p != null) {
+					PacketPlayOut mod = new PacketPlayOut(team.getName(),
+							Arrays.asList(player), 4);
 
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				PacketPlayOut mod = new PacketPlayOut(team.getName(),
-						Arrays.asList(player), 4);
-
-				mod.sendToPlayer(p);
-
+					mod.sendToPlayer(p);
+				}
 			}
 		} catch (Exception e) {
 			System.out
