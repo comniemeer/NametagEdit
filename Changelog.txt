@@ -12,6 +12,7 @@ rather than using static objects/variables
 - Deleted NameFetcher class because we don't use it anymore
 - Edited pom.xml to reflect no more optional dependencies
 - Removed libs as we no longer use them
+- getOnlinePlayers() work around
 - Removed Herobrine
 ======================================
 v2.5.2

@@ -91,8 +91,10 @@ public class NametagCommand implements CommandExecutor {
 			}
 
 			final String targetName = args[1];
-			
-			String oper = Joiner.on(" ").join(Arrays.copyOfRange(args, 2, args.length)).replaceAll("'", "");
+
+			String oper = Joiner.on(" ")
+					.join(Arrays.copyOfRange(args, 2, args.length))
+					.replaceAll("'", "");
 
 			if (args[0].equalsIgnoreCase("prefix")) {
 				setType(targetName, "Prefix", oper);

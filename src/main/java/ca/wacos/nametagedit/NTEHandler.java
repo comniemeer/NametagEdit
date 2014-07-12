@@ -1,10 +1,12 @@
 package ca.wacos.nametagedit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -73,42 +75,58 @@ public class NTEHandler {
 		}
 	}
 
+	// This is a workaround for the deprecated getOnlinePlayers(). Credit to
+	// @Goblom for suggesting
+	public List<Player> getOnline() {
+		List<Player> list = new ArrayList<>();
+
+		for (World world : Bukkit.getWorlds()) {
+			list.addAll(world.getPlayers());
+		}
+		return Collections.unmodifiableList(list);
+	}
+
 	public void applyTags() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
+		for (Player p : getOnline()) {
+			if (p != null) {
+				String uuid = p.getUniqueId().toString();
 
-			String uuid = p.getUniqueId().toString();
+				if (playerData.containsKey(uuid)) {
+					List<String> temp = playerData.get(uuid);
+					NametagManager.overlap(p.getName(), temp.get(1),
+							temp.get(2));
+				} else {
+					String permission = "";
 
-			if (playerData.containsKey(uuid)) {
-				List<String> temp = playerData.get(uuid);
-				NametagManager.overlap(p.getName(), temp.get(1), temp.get(2));
-			} else {
-				String permission = "";
+					for (String s : groupData.keySet()) {
+						List<String> temp = groupData.get(s);
 
-				for (String s : groupData.keySet()) {
-					List<String> temp = groupData.get(s);
-
-					if (p.hasPermission(temp.get(2))) {
-						permission = temp.get(2);
-						break;
+						if (p.hasPermission(temp.get(2))) {
+							permission = temp.get(2);
+							break;
+						}
 					}
-				}
 
-				String group = permissions.get(permission);
-				List<String> temp = groupData.get(group);
+					String group = permissions.get(permission);
+					List<String> temp = groupData.get(group);
 
-				if (temp != null) {
-					NametagCommand.setNametagSoft(p.getName(), temp.get(0),
-							temp.get(1),
-							NametagChangeEvent.NametagChangeReason.GROUP_NODE);
-				}
-
-				if (plugin.tabListDisabled) {
-					String str = "§f" + p.getName();
-					String tab = "";
-					for (int t = 0; t < str.length() && t < 16; t++) {
-						tab += str.charAt(t);
+					if (temp != null) {
+						NametagCommand
+								.setNametagSoft(
+										p.getName(),
+										temp.get(0),
+										temp.get(1),
+										NametagChangeEvent.NametagChangeReason.GROUP_NODE);
 					}
-					p.setPlayerListName(tab);
+
+					if (plugin.tabListDisabled) {
+						String str = "§f" + p.getName();
+						String tab = "";
+						for (int t = 0; t < str.length() && t < 16; t++) {
+							tab += str.charAt(t);
+						}
+						p.setPlayerListName(tab);
+					}
 				}
 			}
 		}
@@ -132,7 +150,7 @@ public class NTEHandler {
 			}
 
 			String group = permissions.get(permission);
-						
+
 			List<String> temp = groupData.get(group);
 
 			if (temp != null) {
