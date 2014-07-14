@@ -239,7 +239,7 @@ public class NametagAPI {
 		return NametagManager.getFormattedName(player);
 	}
 
-	static String trim(String input) {
+	public static String trim(String input) {
 		if (input.length() > 16) {
 			String temp = input;
 			input = "";

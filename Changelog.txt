@@ -13,6 +13,7 @@ rather than using static objects/variables
 - Edited pom.xml to reflect no more optional dependencies
 - Removed libs as we no longer use them
 - getOnlinePlayers() work around
+- Add Chat formatter option
 - Removed Herobrine
 ======================================
 v2.5.2

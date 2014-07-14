@@ -201,7 +201,7 @@ public class NametagManager {
 	 * @param player
 	 *            the specified player
 	 */
-	static void clear(String player) {
+	public static void clear(String player) {
 		removeFromTeam(player);
 	}
 
@@ -357,7 +357,7 @@ public class NametagManager {
 	 * @param p
 	 *            The player to send the packets to.
 	 */
-	static void sendTeamsToPlayer(Player p) {
+	public static void sendTeamsToPlayer(Player p) {
 		try {
 			for (TeamInfo team : getTeams()) {
 				PacketPlayOut mod = new PacketPlayOut(team.getName(),

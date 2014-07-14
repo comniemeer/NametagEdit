@@ -67,7 +67,7 @@ public class NametagCommand implements CommandExecutor {
 		} else if (args.length == 2 && args[0].equalsIgnoreCase("clear")) {
 
 			if (!sender.hasPermission("nametagedit.clear")) {
-				sender.sendMessage("§cYou can only edit your own nametag.");
+				sender.sendMessage(prefix + "§cYou can only edit your own nametag.");
 				return true;
 			}
 
@@ -86,7 +86,7 @@ public class NametagCommand implements CommandExecutor {
 		} else if (args.length > 2) {
 
 			if (!sender.hasPermission("nametagedit.edittags")) {
-				sender.sendMessage("§cYou can only edit your own nametag.");
+				sender.sendMessage(prefix + "§cYou can only edit your own nametag.");
 				return true;
 			}
 
@@ -97,9 +97,9 @@ public class NametagCommand implements CommandExecutor {
 					.replaceAll("'", "");
 
 			if (args[0].equalsIgnoreCase("prefix")) {
-				setType(targetName, "Prefix", oper);
+				setType(targetName, "Prefix", NametagAPI.trim(oper));
 			} else if (args[0].equalsIgnoreCase("suffix")) {
-				setType(targetName, "Suffix", oper);
+				setType(targetName, "Suffix", NametagAPI.trim(oper));
 			}
 		}
 		return true;
@@ -112,7 +112,7 @@ public class NametagCommand implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void setType(final String targetName, final String type,
 			final String args) {
-
+		
 		NametagChangeReason reason = null;
 
 		switch (type) {

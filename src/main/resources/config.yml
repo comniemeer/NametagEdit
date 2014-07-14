@@ -11,3 +11,8 @@ TabListDisabled: false
 
 # If enabled, this plugin will send small data MCStats.org.
 MetricsEnabled: true
+
+# If enabled, this plugin will format the chat
+Chat:
+  Enabled: false
+  Format: "%prefix% %name% %suffix%: %message%"

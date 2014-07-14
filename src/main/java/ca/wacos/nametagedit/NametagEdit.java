@@ -9,9 +9,12 @@ import java.io.OutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
+import ca.wacos.nametagedit.events.AsyncPlayerChat;
+import ca.wacos.nametagedit.events.PlayerJoin;
 import ca.wacos.nametagedit.utils.FileUtils;
 
 /**
@@ -36,8 +39,12 @@ public class NametagEdit extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
-		Bukkit.getPluginManager().registerEvents(new NametagEventHandler(this),
-				this);
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new PlayerJoin(this), this);
+		
+		if(getConfig().getBoolean("Chat.Enabled")){
+			pm.registerEvents(new AsyncPlayerChat(this), this);
+		}
 
 		getCommand("ne").setExecutor(new NametagCommand(this));
 

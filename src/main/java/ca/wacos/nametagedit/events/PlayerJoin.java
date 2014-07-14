@@ -1,4 +1,4 @@
-package ca.wacos.nametagedit;
+package ca.wacos.nametagedit.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,17 +7,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-/**
- * This class is responsible for handling various events in the server.
- * 
- * @author Levi Webb Heavily edited by @sgtcaze
- * 
- */
-class NametagEventHandler implements Listener {
+import ca.wacos.nametagedit.NametagEdit;
+import ca.wacos.nametagedit.NametagManager;
+
+public class PlayerJoin implements Listener {
 
 	private NametagEdit plugin;
 
-	public NametagEventHandler(NametagEdit plugin) {
+	public PlayerJoin(NametagEdit plugin) {
 		this.plugin = plugin;
 	}
 
