@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 /**
  * This class loads all group/player data, and applies the tags during
@@ -24,15 +27,35 @@ public class NTEHandler {
 	}
 
 	private HashMap<String, List<String>> groupData = new HashMap<>();
-	private HashMap<String, List<String>> playerData = new HashMap<>();
+	public HashMap<String, List<String>> playerData = new HashMap<>();
 	private HashMap<String, String> permissions = new HashMap<>();
 
-	public void reload() {
+	public void softReload() {
+		savePlayerData();
+		applyTags();
+	}
+
+	public void hardReload() {
+		savePlayerData();
 		plugin.reloadConfig();
-		plugin.getFileUtils().loadYamls();
+		plugin.getFileUtils().loadGroupsYaml();
 		loadGroups();
 		loadPlayers();
 		applyTags();
+	}
+
+	public void savePlayerData() {
+		for (String s : playerData.keySet()) {
+			List<String> temp = playerData.get(s);
+			plugin.players.set("Players." + s + ".Name", temp.get(0)
+					.replaceAll("§", "&"));
+			plugin.players.set("Players." + s + ".Prefix", temp.get(1)
+					.replaceAll("§", "&"));
+			plugin.players.set("Players." + s + ".Suffix", temp.get(2)
+					.replaceAll("§", "&"));
+		}
+
+		plugin.getFileUtils().savePlayersFile();
 	}
 
 	public void loadGroups() {
@@ -135,16 +158,20 @@ public class NTEHandler {
 	public void applyTagToPlayer(Player p) {
 		String uuid = p.getUniqueId().toString();
 
+		NametagManager.clear(p.getName());
+
 		if (playerData.containsKey(uuid)) {
 			List<String> temp = playerData.get(uuid);
 			NametagManager.overlap(p.getName(), temp.get(1), temp.get(2));
 		} else {
 			String permission = "";
 
+			Permission perm = null;
+
 			for (String s : groupData.keySet()) {
 				List<String> temp = groupData.get(s);
-
-				if (p.hasPermission(temp.get(2))) {
+				perm = new Permission(temp.get(2), PermissionDefault.FALSE);
+				if (p.hasPermission(perm)) {
 					permission = temp.get(2);
 				}
 			}
@@ -171,7 +198,7 @@ public class NTEHandler {
 	}
 
 	private String format(String input) {
-		return trim(input.replaceAll("&", "§"));
+		return trim(ChatColor.translateAlternateColorCodes('&', input));
 	}
 
 	private String trim(String input) {

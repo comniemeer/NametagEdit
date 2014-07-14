@@ -31,7 +31,7 @@ public class NametagEdit extends JavaPlugin {
 	private NTEHandler nteHandler;
 	private NametagManager nametagManager;
 
-	public FileConfiguration groups, players;
+	public FileConfiguration groups, players, config;
 	public File groupsFile, playersFile;
 
 	public boolean tabListDisabled = false;
@@ -39,10 +39,12 @@ public class NametagEdit extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		config = getConfig();
+
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new PlayerJoin(this), this);
-		
-		if(getConfig().getBoolean("Chat.Enabled")){
+
+		if (config.getBoolean("Chat.Enabled")) {
 			pm.registerEvents(new AsyncPlayerChat(this), this);
 		}
 
@@ -78,9 +80,9 @@ public class NametagEdit extends JavaPlugin {
 
 		startup();
 
-		tabListDisabled = getConfig().getBoolean("TabListDisabled");
+		tabListDisabled = config.getBoolean("TabListDisabled");
 
-		if (getConfig().getBoolean("MetricsEnabled")) {
+		if (config.getBoolean("MetricsEnabled")) {
 			try {
 				Metrics metrics = new Metrics(this);
 				metrics.start();
@@ -93,6 +95,7 @@ public class NametagEdit extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		NametagManager.reset();
+		getNTEHandler().savePlayerData();
 	}
 
 	public NametagManager getNametagManager() {

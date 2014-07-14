@@ -23,7 +23,6 @@ public class FileUtils {
 	}
 
 	public void run() throws Exception {
-
 		if (!plugin.groupsFile.exists()) {
 			plugin.groupsFile.getParentFile().mkdirs();
 			copy(plugin.getResource("groups.yml"), plugin.groupsFile);
@@ -35,15 +34,22 @@ public class FileUtils {
 		}
 	}
 
-	public void saveYamls() {
+	public void savePlayersFile() {
 		try {
-			plugin.groups.save(plugin.groupsFile);
 			plugin.players.save(plugin.playersFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void loadGroupsYaml(){
+		try {
+			plugin.groups.load(plugin.groupsFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void loadYamls() {
 		try {
 			plugin.groups.load(plugin.groupsFile);

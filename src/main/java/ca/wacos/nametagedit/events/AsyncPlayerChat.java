@@ -17,15 +17,16 @@ public class AsyncPlayerChat implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent e){
+	public void onPlayerChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
-		
+
 		String prefix = NametagAPI.getPrefix(p.getName());
 		String suffix = NametagAPI.getSuffix(p.getName());
-		
-		String format = plugin.getConfig().getString("Chat.Format").replaceAll("%prefix%", prefix).replaceAll("%suffix%", suffix)
+
+		String format = plugin.getConfig().getString("Chat.Format")
+				.replaceAll("%prefix%", prefix).replaceAll("%suffix%", suffix)
 				.replaceAll("%name%", "%s").replaceAll("%message%", "%s");
-		
+
 		e.setFormat(format);
 	}
 }

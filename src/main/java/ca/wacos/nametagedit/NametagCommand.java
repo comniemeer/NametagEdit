@@ -9,10 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.base.Joiner;
-
 import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
 import ca.wacos.nametagedit.utils.UUIDFetcher;
+
+import com.google.common.base.Joiner;
 
 /**
  * This class is responsible for handling the /ne command.
@@ -20,6 +20,7 @@ import ca.wacos.nametagedit.utils.UUIDFetcher;
  * @author Levi Webb Heavily edited by @sgtcaze
  * 
  */
+@SuppressWarnings("deprecation")
 public class NametagCommand implements CommandExecutor {
 
 	private NametagEdit plugin;
@@ -30,14 +31,13 @@ public class NametagCommand implements CommandExecutor {
 
 	String prefix = "§4[§3NametagEdit§4] ";
 
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			final String[] args) {
 
 		if (sender != null) {
 			if (!sender.hasPermission("nametagedit.use")) {
 				sender.sendMessage(prefix
-						+ "§fYou don not have §cpermission §fto use this command.");
+						+ "§fYou do not have §cpermission §fto use this command.");
 				return true;
 			}
 		}
@@ -52,41 +52,47 @@ public class NametagCommand implements CommandExecutor {
 					+ "§c/ne clear [name] §fclears a player's tags");
 			sender.sendMessage(prefix
 					+ "§c/ne reload §freloads the players/groups files");
-		} else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+		} else if (args.length == 2) {
+			if (args[0].equalsIgnoreCase("clear")) {
+				if (!sender.hasPermission("nametagedit.clear")) {
+					sender.sendMessage(prefix
+							+ "§cYou can only edit your own nametag.");
+					return true;
+				}
 
-			if (!sender.hasPermission("nametagedit.reload")) {
-				sender.sendMessage(prefix
-						+ "§cYou don't have permission to reload this plugin.");
-				return true;
-			}
+				Player target = Bukkit.getPlayer(args[1]);
 
-			plugin.getNTEHandler().reload();
+				if (target != null) {
+					String uuid = target.getUniqueId().toString();
 
-			sender.sendMessage(prefix
-					+ "§fSuccessfully §areloaded §fthe files.");
-		} else if (args.length == 2 && args[0].equalsIgnoreCase("clear")) {
+					NametagManager.clear(target.getName());
 
-			if (!sender.hasPermission("nametagedit.clear")) {
-				sender.sendMessage(prefix + "§cYou can only edit your own nametag.");
-				return true;
-			}
+					if (plugin.getNTEHandler().playerData.containsKey(uuid)) {
+						plugin.getNTEHandler().playerData.remove(uuid);
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("reload")) {
+				if (!sender.hasPermission("nametagedit.reload")) {
+					sender.sendMessage(prefix
+							+ "§cYou don't have permission to reload this plugin.");
+					return true;
+				}
 
-			Player target = Bukkit.getPlayer(args[1]);
-
-			if (target != null) {
-				String uuid = target.getUniqueId().toString();
-
-				NametagManager.clear(target.getName());
-				if (plugin.players.contains("Players." + uuid)) {
-					plugin.players.set("Players." + uuid + ".Prefix", "");
-					plugin.players.set("Players." + uuid + ".Suffix", "");
-					plugin.getFileUtils().saveYamls();
+				if (args[1].equalsIgnoreCase("hard")) {
+					plugin.getNTEHandler().hardReload();
+					sender.sendMessage(prefix
+							+ "§fSuccessfully §areloaded §fthe files.");
+				} else if (args[1].equalsIgnoreCase("soft")) {
+					plugin.getNTEHandler().softReload();
+					sender.sendMessage(prefix
+							+ "§fSuccessfully §areloaded §fthe files.");
 				}
 			}
 		} else if (args.length > 2) {
 
 			if (!sender.hasPermission("nametagedit.edittags")) {
-				sender.sendMessage(prefix + "§cYou can only edit your own nametag.");
+				sender.sendMessage(prefix
+						+ "§cYou can only edit your own nametag.");
 				return true;
 			}
 
@@ -94,35 +100,40 @@ public class NametagCommand implements CommandExecutor {
 
 			String oper = Joiner.on(" ")
 					.join(Arrays.copyOfRange(args, 2, args.length))
-					.replaceAll("'", "");
+					.replaceAll("'", "").replaceAll("&", "§");
 
 			if (args[0].equalsIgnoreCase("prefix")) {
-				setType(targetName, "Prefix", NametagAPI.trim(oper));
+				setType(sender, targetName, "Prefix", NametagAPI.trim(oper));
 			} else if (args[0].equalsIgnoreCase("suffix")) {
-				setType(targetName, "Suffix", NametagAPI.trim(oper));
+				setType(sender, targetName, "Suffix", NametagAPI.trim(oper));
 			}
 		}
 		return true;
 	}
 
 	/**
-	 * Updates the players.yml file with the tags, and the reason Calls are made
-	 * async if the player is offline (to get their UUID)
+	 * Updates the playerData hashmap and reloads the content async if the
+	 * player is offline (to get their UUID)
 	 */
-	@SuppressWarnings("deprecation")
-	public void setType(final String targetName, final String type,
-			final String args) {
-		
+	public void setType(final CommandSender sender, final String targetName,
+			final String type, final String args) {
+
 		NametagChangeReason reason = null;
+
+		int tempId = 0;
 
 		switch (type) {
 		case "Prefix":
 			reason = NametagChangeReason.SET_PREFIX;
+			tempId = 1;
 			break;
 		case "Suffix":
 			reason = NametagChangeReason.SET_SUFFIX;
+			tempId = 2;
 			break;
 		}
+
+		final int finId = tempId;
 
 		Player target = Bukkit.getPlayer(targetName);
 
@@ -130,20 +141,18 @@ public class NametagCommand implements CommandExecutor {
 
 			String uuid = target.getUniqueId().toString();
 
-			if (!plugin.players.contains("Players." + uuid)) {
-				plugin.players.set("Players." + uuid + ".Name", targetName);
-				plugin.players.set("Players." + uuid + ".Prefix", "");
-				plugin.players.set("Players." + uuid + ".Suffix", "");
+			if (!plugin.getNTEHandler().playerData.containsKey(uuid)) {
+				plugin.getNTEHandler().playerData.put(uuid,
+						Arrays.asList(targetName, "", ""));
 			}
 
-			plugin.players.set("Players." + uuid + "." + type, args);
+			plugin.getNTEHandler().playerData.get(uuid).set(finId, args);
 
-			plugin.getFileUtils().saveYamls();
-
-			plugin.getNTEHandler().reload();
-
-			setNametagSoft(target.getName(), args.replaceAll("&", "§"), "",
-					reason);
+			if (reason == NametagChangeReason.SET_PREFIX) {
+				setNametagSoft(target.getName(), args, "", reason);
+			} else if (reason == NametagChangeReason.SET_SUFFIX) {
+				setNametagSoft(target.getName(), "", args, reason);
+			}
 		} else {
 			new BukkitRunnable() {
 				@Override
@@ -153,7 +162,10 @@ public class NametagCommand implements CommandExecutor {
 					try {
 						temp = UUIDFetcher.getUUIDOf(targetName).toString();
 					} catch (Exception e) {
-						e.printStackTrace();
+						sender.sendMessage(prefix
+								+ "§cCould not retrieve the UUID for: §f"
+								+ targetName);
+						return;
 					}
 
 					final String uuid = temp;
@@ -161,21 +173,14 @@ public class NametagCommand implements CommandExecutor {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
-							if (!plugin.players.contains("Players." + uuid)) {
-								plugin.players.set("Players." + uuid + ".Name",
-										targetName);
-								plugin.players.set("Players." + uuid
-										+ ".Prefix", "");
-								plugin.players.set("Players." + uuid
-										+ ".Suffix", "");
+							if (!plugin.getNTEHandler().playerData
+									.containsKey(uuid)) {
+								plugin.getNTEHandler().playerData.put(uuid,
+										Arrays.asList(targetName, "", ""));
 							}
 
-							plugin.players.set("Players." + uuid + "." + type,
-									args);
-
-							plugin.getFileUtils().saveYamls();
-
-							plugin.getNTEHandler().reload();
+							plugin.getNTEHandler().playerData.get(uuid).set(
+									finId, args);
 						}
 					}.runTask(plugin);
 				}
