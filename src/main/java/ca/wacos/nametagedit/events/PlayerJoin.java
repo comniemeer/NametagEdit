@@ -18,21 +18,9 @@ public class PlayerJoin implements Listener {
 		this.plugin = plugin;
 	}
 
-	/**
-	 * Called when a player joins the server. This event is set to
-	 * <i>HIGHEST</i> priority to address a conflict created with plugins that
-	 * read player information in this event.<br>
-	 * <br>
-	 * 
-	 * This event updates nametag information, and the tab list (if enabled).
-	 * 
-	 * @param e
-	 *            the {@link org.bukkit.event.player.PlayerJoinEvent} associated
-	 *            with this listener.
-	 */
+	// Clears a player's tag, sends teams, and applies tags to the player
 	@EventHandler(priority = EventPriority.HIGHEST)
-	void onPlayerJoin(final PlayerJoinEvent e) {
-
+	public void onPlayerJoin(final PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
 
 		NametagManager.sendTeamsToPlayer(p);

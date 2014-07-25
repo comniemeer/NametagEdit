@@ -16,3 +16,12 @@ MetricsEnabled: true
 Chat:
   Enabled: false
   Format: "%prefix% %name% %suffix%: %message%"
+  
+# If enabled, NametagEdit will use database support
+MySQL:
+  Enabled: false
+  Hostname: localhost
+  Port: 3306
+  Username: myUsername
+  Password: myPassword
+  Database: myDatabase 

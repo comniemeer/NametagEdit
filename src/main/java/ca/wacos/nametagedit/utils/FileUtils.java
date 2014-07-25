@@ -22,6 +22,7 @@ public class FileUtils {
 		this.plugin = plugin;
 	}
 
+	// Creates files if they do not exist
 	public void run() throws Exception {
 		if (!plugin.groupsFile.exists()) {
 			plugin.groupsFile.getParentFile().mkdirs();
@@ -41,15 +42,15 @@ public class FileUtils {
 			e.printStackTrace();
 		}
 	}
-	
-	public void loadGroupsYaml(){
+
+	public void saveGroupsFile() {
 		try {
-			plugin.groups.load(plugin.groupsFile);
-		} catch (Exception e) {
+			plugin.groups.save(plugin.groupsFile);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadYamls() {
 		try {
 			plugin.groups.load(plugin.groupsFile);

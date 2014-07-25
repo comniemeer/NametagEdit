@@ -1,26 +1,26 @@
 package ca.wacos.nametagedit;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
 import ca.wacos.nametagedit.events.AsyncPlayerChat;
+import ca.wacos.nametagedit.events.InventoryClick;
 import ca.wacos.nametagedit.events.PlayerJoin;
 import ca.wacos.nametagedit.utils.FileUtils;
+import ca.wacos.nametagedit.utils.MySQL;
 
 /**
- * This is the main class for the NametagEdit server plugin.
+ * This is the main class for the NametagEdit plugin.
  * 
- * @author Levi Webb Heavily edited by @sgtcaze
+ * @author sgtcaze
  * 
  */
 public class NametagEdit extends JavaPlugin {
@@ -29,12 +29,15 @@ public class NametagEdit extends JavaPlugin {
 
 	private FileUtils fileUtils;
 	private NTEHandler nteHandler;
+	private MySQL mySQL;
 	private NametagManager nametagManager;
+
+	public Inventory organizer;
 
 	public FileConfiguration groups, players, config;
 	public File groupsFile, playersFile;
 
-	public boolean tabListDisabled = false;
+	public boolean tabListDisabled, databaseEnabled;
 
 	@Override
 	public void onEnable() {
@@ -43,6 +46,7 @@ public class NametagEdit extends JavaPlugin {
 
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new PlayerJoin(this), this);
+		pm.registerEvents(new InventoryClick(this), this);
 
 		if (config.getBoolean("Chat.Enabled")) {
 			pm.registerEvents(new AsyncPlayerChat(this), this);
@@ -55,6 +59,7 @@ public class NametagEdit extends JavaPlugin {
 		fileUtils = new FileUtils(this);
 		nametagManager = new NametagManager();
 		nteHandler = new NTEHandler(this);
+		mySQL = new MySQL(this);
 
 		saveDefaultConfig();
 
@@ -74,13 +79,8 @@ public class NametagEdit extends JavaPlugin {
 
 		fileUtils.loadYamls();
 
-		nteHandler.loadGroups();
-		nteHandler.loadPlayers();
-		nteHandler.applyTags();
-
-		startup();
-
 		tabListDisabled = config.getBoolean("TabListDisabled");
+		databaseEnabled = config.getBoolean("MySQL.Enabled");
 
 		if (config.getBoolean("MetricsEnabled")) {
 			try {
@@ -90,12 +90,28 @@ public class NametagEdit extends JavaPlugin {
 				// Failed to submit the stats :-(
 			}
 		}
+
+		if (databaseEnabled) {
+			mySQL.open();
+			mySQL.createTables();
+			nteHandler.loadFromSQL();
+		} else {
+			nteHandler.loadFromFile();
+		}
+
+		nteHandler.applyTags();
 	}
 
 	@Override
 	public void onDisable() {
 		NametagManager.reset();
-		getNTEHandler().savePlayerData();
+
+		fileUtils.loadYamls();
+		getNTEHandler().saveFileData();
+
+		if (databaseEnabled) {
+			mySQL.close();
+		}
 	}
 
 	public NametagManager getNametagManager() {
@@ -110,23 +126,7 @@ public class NametagEdit extends JavaPlugin {
 		return fileUtils;
 	}
 
-	private void startup() {
-		File f = new File(plugin.getDataFolder() + File.separator + "INFO.txt");
-
-		if (!f.exists()) {
-			try {
-				InputStream in = plugin.getResource("INFO.txt");
-				OutputStream out = new FileOutputStream(f);
-				byte[] buf = new byte[1024];
-				int len;
-				while ((len = in.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				}
-				out.close();
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+	public MySQL getMySQL() {
+		return mySQL;
 	}
 }

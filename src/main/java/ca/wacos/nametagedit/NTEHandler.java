@@ -8,9 +8,13 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
 
 /**
  * This class loads all group/player data, and applies the tags during
@@ -26,25 +30,44 @@ public class NTEHandler {
 		this.plugin = plugin;
 	}
 
-	private HashMap<String, List<String>> groupData = new HashMap<>();
+	// Stores all group names in order
+	public List<String> allGroups = new ArrayList<>();
+
+	// Corresponds permission to group name
+	public HashMap<String, String> permissions = new HashMap<>();
+
+	// Stores all group names to permissions/prefix/suffix
+	public HashMap<String, List<String>> groupData = new HashMap<>();
+
+	// Stores all player names to prefix/suffix
 	public HashMap<String, List<String>> playerData = new HashMap<>();
-	private HashMap<String, String> permissions = new HashMap<>();
 
-	public void softReload() {
-		savePlayerData();
-		applyTags();
+	// Reloads files, and reapplies tags
+	public void reload(CommandSender sender, boolean fromFile) {
+		if (plugin.databaseEnabled) {
+			loadFromSQL();
+		} else {
+			if (fromFile) {
+				// We load, then save so active edits aren't lost
+				plugin.reloadConfig();
+				plugin.getFileUtils().loadYamls();
+				loadFromFile();
+			} else {
+				plugin.saveConfig();
+				saveFileData();
+				loadFromFile();
+			}
+
+			applyTags();
+		}
+
+		sender.sendMessage("§f[§6NametagEdit§f] §fSuccessfully reloaded files.");
 	}
 
-	public void hardReload() {
-		savePlayerData();
-		plugin.reloadConfig();
-		plugin.getFileUtils().loadGroupsYaml();
-		loadGroups();
-		loadPlayers();
-		applyTags();
-	}
+	// Saves all player and group data
+	public void saveFileData() {
+		plugin.groups.set("Order", allGroups);
 
-	public void savePlayerData() {
 		for (String s : playerData.keySet()) {
 			List<String> temp = playerData.get(s);
 			plugin.players.set("Players." + s + ".Name", temp.get(0)
@@ -55,31 +78,45 @@ public class NTEHandler {
 					.replaceAll("§", "&"));
 		}
 
+		for (String s : groupData.keySet()) {
+			List<String> temp = groupData.get(s);
+			plugin.groups.set("Groups." + s + ".Permission", temp.get(0)
+					.replaceAll("§", "&"));
+			plugin.groups.set("Groups." + s + ".Prefix", temp.get(1)
+					.replaceAll("§", "&"));
+			plugin.groups.set("Groups." + s + ".Suffix", temp.get(2)
+					.replaceAll("§", "&"));
+		}
+
 		plugin.getFileUtils().savePlayersFile();
+		plugin.getFileUtils().saveGroupsFile();
 	}
 
-	public void loadGroups() {
+	// Loads all player and group data (file)
+	public void loadFromFile() {
 		groupData.clear();
+		playerData.clear();
 
-		for (String s : plugin.groups.getConfigurationSection("Groups")
-				.getKeys(false)) {
+		allGroups.clear();
+
+		for (String s : plugin.groups.getStringList("Order")) {
+			allGroups.add(s);
+		}
+
+		for (String s : allGroups) {
 			List<String> tempData = new ArrayList<>();
+			String perm = plugin.groups
+					.getString("Groups." + s + ".Permission");
 			String prefix = plugin.groups.getString("Groups." + s + ".Prefix");
 			String suffix = plugin.groups.getString("Groups." + s + ".Suffix");
-			String permission = plugin.groups.getString("Groups." + s
-					+ ".Permission");
 
+			tempData.add(perm);
 			tempData.add(format(prefix));
 			tempData.add(format(suffix));
-			tempData.add(permission);
 
 			groupData.put(s, tempData);
-			permissions.put(permission, s);
+			permissions.put(perm, s);
 		}
-	}
-
-	public void loadPlayers() {
-		playerData.clear();
 
 		for (String s : plugin.players.getConfigurationSection("Players")
 				.getKeys(false)) {
@@ -98,8 +135,42 @@ public class NTEHandler {
 		}
 	}
 
-	// This is a workaround for the deprecated getOnlinePlayers(). Credit to
-	// @Goblom for suggesting
+	// Loads all player and group data (SQL)
+	public void loadFromSQL() {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				final HashMap<String, List<String>> groups = plugin.getMySQL()
+						.returnGroups();
+				final HashMap<String, List<String>> players = plugin.getMySQL()
+						.returnPlayers();
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						groupData.clear();
+						playerData.clear();
+
+						groupData = groups;
+						playerData = players;
+
+						allGroups.clear();
+
+						for (String s : groups.keySet()) {
+							allGroups.add(s);
+						}
+
+						plugin.getLogger().info(
+								"[MySQL] Everything loaded successfully!");
+
+						applyTags();
+					}
+				}.runTask(plugin);
+			}
+		}.runTaskAsynchronously(plugin);
+	}
+
+	// Workaround for the deprecated getOnlinePlayers(). @Goblom suggested
 	public List<Player> getOnline() {
 		List<Player> list = new ArrayList<>();
 
@@ -109,9 +180,12 @@ public class NTEHandler {
 		return Collections.unmodifiableList(list);
 	}
 
+	// Applies tags to online players (for /reload, and /ne reload)
 	public void applyTags() {
 		for (Player p : getOnline()) {
 			if (p != null) {
+				NametagManager.clear(p.getName());
+
 				String uuid = p.getUniqueId().toString();
 
 				if (playerData.containsKey(uuid)) {
@@ -121,12 +195,14 @@ public class NTEHandler {
 				} else {
 					String permission = "";
 
-					for (String s : groupData.keySet()) {
-						List<String> temp = groupData.get(s);
+					Permission perm = null;
 
-						if (p.hasPermission(temp.get(2))) {
-							permission = temp.get(2);
-							break;
+					for (String s : allGroups) {
+						List<String> temp = groupData.get(s);
+						perm = new Permission(temp.get(0),
+								PermissionDefault.FALSE);
+						if (p.hasPermission(perm)) {
+							permission = temp.get(0);
 						}
 					}
 
@@ -134,12 +210,8 @@ public class NTEHandler {
 					List<String> temp = groupData.get(group);
 
 					if (temp != null) {
-						NametagCommand
-								.setNametagSoft(
-										p.getName(),
-										temp.get(0),
-										temp.get(1),
-										NametagChangeEvent.NametagChangeReason.GROUP_NODE);
+						NametagCommand.setNametagSoft(p.getName(), temp.get(1),
+								temp.get(2), NametagChangeReason.GROUP_NODE);
 					}
 
 					if (plugin.tabListDisabled) {
@@ -155,6 +227,7 @@ public class NTEHandler {
 		}
 	}
 
+	// Applies tags to a specific player
 	public void applyTagToPlayer(Player p) {
 		String uuid = p.getUniqueId().toString();
 
@@ -168,11 +241,11 @@ public class NTEHandler {
 
 			Permission perm = null;
 
-			for (String s : groupData.keySet()) {
+			for (String s : allGroups) {
 				List<String> temp = groupData.get(s);
-				perm = new Permission(temp.get(2), PermissionDefault.FALSE);
+				perm = new Permission(temp.get(0), PermissionDefault.FALSE);
 				if (p.hasPermission(perm)) {
-					permission = temp.get(2);
+					permission = temp.get(0);
 				}
 			}
 
@@ -181,9 +254,8 @@ public class NTEHandler {
 			List<String> temp = groupData.get(group);
 
 			if (temp != null) {
-				NametagCommand.setNametagSoft(p.getName(), temp.get(0),
-						temp.get(1),
-						NametagChangeEvent.NametagChangeReason.GROUP_NODE);
+				NametagCommand.setNametagSoft(p.getName(), temp.get(1),
+						temp.get(2), NametagChangeReason.GROUP_NODE);
 			}
 		}
 
@@ -198,17 +270,7 @@ public class NTEHandler {
 	}
 
 	private String format(String input) {
-		return trim(ChatColor.translateAlternateColorCodes('&', input));
-	}
-
-	private String trim(String input) {
-		if (input.length() > 16) {
-			String temp = input;
-			input = "";
-			for (int t = 0; t < 16; t++) {
-				input += temp.charAt(t);
-			}
-		}
-		return input;
+		return NametagAPI.trim(ChatColor.translateAlternateColorCodes('&',
+				input));
 	}
 }

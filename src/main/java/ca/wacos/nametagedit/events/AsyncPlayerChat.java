@@ -16,6 +16,7 @@ public class AsyncPlayerChat implements Listener {
 		this.plugin = plugin;
 	}
 
+	// Formats chat if 'true' in the config
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
@@ -23,7 +24,7 @@ public class AsyncPlayerChat implements Listener {
 		String prefix = NametagAPI.getPrefix(p.getName());
 		String suffix = NametagAPI.getSuffix(p.getName());
 
-		String format = plugin.getConfig().getString("Chat.Format")
+		String format = plugin.config.getString("Chat.Format")
 				.replaceAll("%prefix%", prefix).replaceAll("%suffix%", suffix)
 				.replaceAll("%name%", "%s").replaceAll("%message%", "%s");
 

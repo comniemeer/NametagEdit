@@ -46,8 +46,7 @@ public class NametagManager {
 		}
 	}
 
-	// This is a workaround for the deprecated getOnlinePlayers(). Credit to
-	// @Goblom for suggesting
+	// Workaround for the deprecated getOnlinePlayers(). @Goblom suggested
 	public static List<Player> getOnline() {
 		List<Player> list = new ArrayList<>();
 

@@ -14,6 +14,8 @@ rather than using static objects/variables
 - Removed libs as we no longer use them
 - getOnlinePlayers() work around
 - Add Chat formatter option
+- Added MySQL Support
+- Added /ne groups base command (create groups, alter attributes)
 - Removed Herobrine
 ======================================
 v2.5.2

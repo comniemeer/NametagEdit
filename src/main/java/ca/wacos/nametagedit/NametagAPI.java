@@ -239,6 +239,13 @@ public class NametagAPI {
 		return NametagManager.getFormattedName(player);
 	}
 
+	/**
+	 * Function trims a string
+	 * 
+	 * @param input
+	 *            string to trim
+	 * @return a <= 16 character string
+	 */
 	public static String trim(String input) {
 		if (input.length() > 16) {
 			String temp = input;
