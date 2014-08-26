@@ -1,21 +1,33 @@
 package ca.wacos.nametagedit;
 
-import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
+import ca.wacos.nametagedit.core.NTEHandler;
+import ca.wacos.nametagedit.core.NametagManager;
 import ca.wacos.nametagedit.events.AsyncPlayerChat;
 import ca.wacos.nametagedit.events.InventoryClick;
 import ca.wacos.nametagedit.events.PlayerJoin;
-import ca.wacos.nametagedit.utils.FileUtils;
+import ca.wacos.nametagedit.utils.FileManager;
 import ca.wacos.nametagedit.utils.MySQL;
+
+import com.jolbox.bonecp.BoneCP;
+import com.jolbox.bonecp.BoneCPConfig;
 
 /**
  * This is the main class for the NametagEdit plugin.
@@ -25,108 +37,209 @@ import ca.wacos.nametagedit.utils.MySQL;
  */
 public class NametagEdit extends JavaPlugin {
 
-	static NametagEdit plugin;
+    private static NametagEdit instance;
 
-	private FileUtils fileUtils;
-	private NTEHandler nteHandler;
-	private MySQL mySQL;
-	private NametagManager nametagManager;
+    private MySQL mySQL;
+    private FileManager fileUtils;
+    private NTEHandler nteHandler;
+    private NametagManager nametagManager;
 
-	public Inventory organizer;
+    public Inventory organizer;
 
-	public FileConfiguration groups, players, config;
-	public File groupsFile, playersFile;
+    private BoneCP connectionPool;
 
-	public boolean tabListDisabled, databaseEnabled;
+    public boolean tabListDisabled, databaseEnabled;
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
+        instance = this;
 
-		config = getConfig();
+        FileConfiguration config = getConfig();
 
-		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new PlayerJoin(this), this);
-		pm.registerEvents(new InventoryClick(this), this);
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new PlayerJoin(), this);
+        pm.registerEvents(new InventoryClick(), this);
 
-		if (config.getBoolean("Chat.Enabled")) {
-			pm.registerEvents(new AsyncPlayerChat(this), this);
-		}
+        if (config.getBoolean("Chat.Enabled")) {
+            pm.registerEvents(new AsyncPlayerChat(), this);
+        }
 
-		getCommand("ne").setExecutor(new NametagCommand(this));
+        getCommand("ne").setExecutor(new NametagCommand());
 
-		plugin = this;
+        fileUtils = new FileManager();
+        nametagManager = new NametagManager();
+        nteHandler = new NTEHandler();
+        mySQL = new MySQL();
 
-		fileUtils = new FileUtils(this);
-		nametagManager = new NametagManager();
-		nteHandler = new NTEHandler(this);
-		mySQL = new MySQL(this);
+        saveDefaultConfig();
 
-		saveDefaultConfig();
+        NametagManager.load();
 
-		NametagManager.load();
+        fileUtils.loadFiles();
 
-		groupsFile = new File(getDataFolder(), "groups.yml");
-		playersFile = new File(getDataFolder(), "players.yml");
+        tabListDisabled = config.getBoolean("TabListDisabled");
+        databaseEnabled = config.getBoolean("MySQL.Enabled");
 
-		try {
-			fileUtils.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        if (config.getBoolean("MetricsEnabled")) {
+            try {
+                Metrics metrics = new Metrics(this);
+                metrics.start();
+            } catch (IOException e) {
+                // Failed to submit the stats :-(
+            }
+        }
 
-		groups = new YamlConfiguration();
-		players = new YamlConfiguration();
+        if (databaseEnabled) {
+            setupBoneCP();
+            new SQLData().runTaskAsynchronously(this);
+        } else {
+            nteHandler.loadFromFile(fileUtils.getPlayersFile(),
+                    fileUtils.getGroupsFile());
+        }
 
-		fileUtils.loadYamls();
+        nteHandler.applyTags();
+    }
 
-		tabListDisabled = config.getBoolean("TabListDisabled");
-		databaseEnabled = config.getBoolean("MySQL.Enabled");
+    @Override
+    public void onDisable() {
+        NametagManager.reset();
 
-		if (config.getBoolean("MetricsEnabled")) {
-			try {
-				Metrics metrics = new Metrics(this);
-				metrics.start();
-			} catch (IOException e) {
-				// Failed to submit the stats :-(
-			}
-		}
+        getNTEHandler().saveFileData(fileUtils.getPlayersFile(),
+                fileUtils.getGroupsFile());
 
-		if (databaseEnabled) {
-			mySQL.open();
-			mySQL.createTables();
-			nteHandler.loadFromSQL();
-		} else {
-			nteHandler.loadFromFile();
-		}
+        if (databaseEnabled) {
+            if (connectionPool != null) {
+                connectionPool.shutdown();
+            }
+        }
+    }
 
-		nteHandler.applyTags();
-	}
+    public static NametagEdit getInstance() {
+        return instance;
+    }
 
-	@Override
-	public void onDisable() {
-		NametagManager.reset();
+    public NametagManager getNametagManager() {
+        return nametagManager;
+    }
 
-		fileUtils.loadYamls();
-		getNTEHandler().saveFileData();
+    public NTEHandler getNTEHandler() {
+        return nteHandler;
+    }
 
-		if (databaseEnabled) {
-			mySQL.close();
-		}
-	}
+    public FileManager getFileUtils() {
+        return fileUtils;
+    }
 
-	public NametagManager getNametagManager() {
-		return nametagManager;
-	}
+    public MySQL getMySQL() {
+        return mySQL;
+    }
 
-	public NTEHandler getNTEHandler() {
-		return nteHandler;
-	}
+    public BoneCP getConnectionPool() {
+        return connectionPool;
+    }
 
-	public FileUtils getFileUtils() {
-		return fileUtils;
-	}
+    private void setupBoneCP() {
+        FileConfiguration bconfig = getConfig();
+        String address = "jdbc:mysql://" + bconfig.getString("MySQL.Hostname")
+                + ":" + bconfig.getString("MySQL.Port") + "/"
+                + bconfig.getString("MySQL.Database");
+        String username = bconfig.getString("MySQL.Username");
+        String password = bconfig.getString("MySQL.Password");
 
-	public MySQL getMySQL() {
-		return mySQL;
-	}
+        try {
+            BoneCPConfig config = new BoneCPConfig();
+            config.setJdbcUrl(address);
+            config.setUsername(username);
+            config.setPassword(password);
+            config.setMinConnectionsPerPartition(5);
+            config.setMaxConnectionsPerPartition(10);
+            config.setPartitionCount(1);
+            connectionPool = new BoneCP(config);
+        } catch (SQLException e) {
+            getLogger().severe(
+                    "The BoneCP connection pool could not be established!");
+            e.printStackTrace();
+            return;
+        }
+
+        Connection connection = null;
+
+        try {
+            connection = connectionPool.getConnection();
+        } catch (SQLException e) {
+            getLogger()
+                    .severe("The MySQL connection could not be established!");
+            e.printStackTrace();
+
+        }
+
+        String playerTable = "CREATE TABLE IF NOT EXISTS `players` (`uuid` varchar(64) NOT NULL, `name` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`uuid`));";
+        String groupTable = "CREATE TABLE IF NOT EXISTS `groups` (`name` varchar(64) NOT NULL, `permission` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`name`));";
+
+        try {
+            PreparedStatement p = connection.prepareStatement(playerTable);
+            p.execute();
+            p.close();
+
+            PreparedStatement g = connection.prepareStatement(groupTable);
+            g.execute();
+            g.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns an ItemStack for the group organizer
+     */
+    public ItemStack make(Material material, int amount, int shrt,
+            String displayName, List<String> lore) {
+        ItemStack item = new ItemStack(material, amount, (short) shrt);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(displayName);
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    /**
+     * Opens the group organizer
+     * 
+     * @param p
+     *            the player to open the inventory
+     */
+    public void createOrganizer(Player p) {
+        organizer = Bukkit.createInventory(null, 18,
+                "§0NametagEdit Group Organizer");
+        organizer
+                .setItem(
+                        0,
+                        make(Material.WOOL,
+                                1,
+                                5,
+                                "§bNametagEdit Organizer",
+                                Arrays.asList(
+                                        "§fStarting from the left and going to the right",
+                                        "§forganize your groups so the most important",
+                                        "§fgroup is at the end.")));
+        organizer.setItem(
+                1,
+                make(Material.WOOL, 1, 5, "§aDone",
+                        Arrays.asList("§fONLY click this when you are done!")));
+
+        for (String s : getNTEHandler().allGroups) {
+            organizer.addItem(make(Material.WOOL, 1, 0, s,
+                    Arrays.asList("§7Move Me :D")));
+        }
+
+        p.openInventory(organizer);
+    }
 }

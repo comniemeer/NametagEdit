@@ -1,7 +1,7 @@
 = NametagEdit
 
 == Description
-NametagEdit is an easy to configure plugin that allows users to change their nametags and tab names. With NametagEdit, users can add an additional 16 characters before and after their name. Additionally, the reflection in use will keep the plugin compatible with several minecraft versions (currently compatible with 1.5.2 - 1.7.9).
+NametagEdit is an easy to configure plugin that allows users to change their nametags and tab names. With NametagEdit, users can add an additional 16 characters before and after their name. Additionally, the reflection in use will keep the plugin compatible with several minecraft versions (currently compatible with 1.5.2 - 1.7.10).
 
 *BukkitDev: [[http://dev.bukkit.org/bukkit-plugins/nametagedit|Click Here]]
 *Dev Builds: [[http://ci.playmc.cc/job/NametagEdit|Click Here]]
@@ -10,51 +10,84 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 
 | Command | Parameters | Description |
 | nte | none | Displays all available command arguments |
-| nte | reload | Reloads all configuration files, and reapplies nametags |
-| nte | clear <player> | Clears the prefix and suffix for a player |
-| nte | prefix/suffix <new> | Sets the prefix or suffix for a player |
+| nte | reload <file/memory> | A 'file' reload takes active edits to the config while 'memory' overwrites from the cache |
+| nte | clear [player] | Clears the prefix and suffix for a player |
+| nte | <prefix/suffix> [text] | Sets the prefix or suffix for a player |
+| nte | groups list | Lists all loaded groups |
+| nte | groups add [groupName] | Creates a new group |
+| nte | groups remove [groupName] | Removes a group |
+| nte | groups order | Opens a GUI to organize group hierachy |
+| nte | groups set [perm] [groupName] | Sets the default permission for a group |
+| nte | groups set [prefix] [groupName] | Sets the prefix for a group |
+| nte | groups set [suffix] [groupName] | Sets the suffix for a group |
 
-=== Example Usage
-Suppose we wish to have a nametag like: [Admin] sgtcazeyt
+=== Example Command Usage
+
+== Editing Invidiual Prefixes/Suffixes
+Suppose we wish to have a nametag like: "[Admin] sgtcazeyt"
 The command would be: /nte prefix sgtcazeyt '[Admin] '
-The ' ' characters will be automatically removed, and allow you to have spaces
+The ' ' characters will be automatically removed, and allow you to use spaces
+
+== Creating/Editing Group Properties
+So we want to create, or edit a group. We can start by creating it:
+First, we'll use: /ne groups add MyGroup
+Second, we need to set the permission: /ne groups set perm MyGroup my.custom.permission
+Next, we'll need to set the prefix: /ne groups set prefix MyGroup "&a[MyGroup] &e"
+Finally, we'll set the suffix: /ne groups set suffix MyGroup " &cMy Suffix"
 
 == Permissions
 
 | Permission | Description |
-| nametagedit.use | Allows use of the /nte command to display the command list |
-| nametagedit.reload | Allows use of the /nte reload parameter |
-| nametagedit.clear | Allows a player to clear ANYONE's prefix/suffix |
-| nametagedit.edittags | Allows a player to edit ANYONE's prefix/suffix |
+| nametagedit.use | Allows a player to use the NametagEdit plugin |
+| nametagedit.reload | Allows a user to reload the plugin's data |
+| nametagedit.clear.others | Allows a player to clear ANYONE's prefix/suffix |
+| nametagedit.clear.self | Allows a player to only clear their own prefix/suffix |
+| nametagedit.edit.others | Allows a player to edit ANYONE's prefix/suffix |
+| nametagedit.edit.self | Allows a player to only edit their own prefix/suffix |
+| nametagedit.groups | Allows usage of ALL group subcommands (create, edit, remove) |
+
+== FlatFile and MySQL 
+Currently there are two options for storing group/player data. They are "flatfile" and "mysql". Flatfile is practical for small servers that only intend
+to run specific configurations. For larger servers that require tags be consistent through, let's say a network, MySQL easily manages access from multiple locations
+
+If you choose FlatFile support, all your edits will be accessible via the players.yml and groups.yml files. 
+
+If you choose MySQL support, all edits must be made via the API or in game commands. NametagEdit requires a database for MySQL support. Once initiated, NametagEdit
+will establish a connection automatically, and generate the necessary tables for you if they do not exist. If you use a mysql web editor, such as PhpMyAdmin, you
+can easily (and directly) modify NametagEdit data as if it were a flat file. Similarly, a the MySQL terminal can be used. 
 
 == Configuration
-When the plugin  starts for the first time, it will generate 3 configurable files. They are: "config.yml", "groups.yml" and "players.yml".
+When the plugin starts for the first time, it will generate 3 configurable files. They are: "config.yml", "groups.yml" and "players.yml".
 
 === config.yml
 
 | Option  | Value(s)  | Description |
 | TabListDisabled | true/false | If enabled, NametagEdit will not alter a user's name in the tab. This can also be overriden with the function setPlayerListName(); |
 | MetricsEnabled  | true/false | If 'true', small amounts of data will be sent to MCstats.org so we can keep track of the plugin's popularity. |
+| Chat.Enabled | true/false | If 'true', NametagEdit will format the chat with the "Chat.Format" string |
+| MySQL | true/false | If 'true', NametagEdit will use MySQL to store group/player data |
 
 === groups.yml
 When arranging your groups.yml, please have the order be ascending. Meaning, have your lowest group at the top (let's say default) and your highest group (let's say owner) at the bottom.
 
 {{{
 Groups:
-  Moderator: // This is the 'key' or the thing to distinguish this group //  
-	Permission: nte.moderator // This is the permission required to have this nametag - it can be anything //  
-	Prefix: '&2' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //  
-	Suffix: '&f'
+  Moderator: # This is the 'key' or the thing to distinguish this group
+  Permission: nte.moderator # This is the permission required to have this nametag - it can be anything
+  Prefix: '&2' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended 
+  Suffix: '&f'
 }}}
+
 === players.yml
 
 {{{
 Players:
-  b5ccebaa-0623-4370-af73-0ec985dfa3b0: // This is the 'key' to identify the players //   
-	Name: sgtcazeyt // This is the friendly name of the player //  
-	Prefix: '&b' // Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended //
-    Suffix: '&c'
+  b5ccebaa-0623-4370-af73-0ec985dfa3b0: # This is the 'key' to identify the players
+  Name: sgtcazeyt # This is the friendly name of the player
+  Prefix: '&b' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended
+  Suffix: '&c'
 }}}
+
 == FAQ
 
 **Will NametagEdit allow me to change my skin/name?**
@@ -63,7 +96,7 @@ No, NametagEdit only builds on your current name.
 
 **Why should I use this plugin?**
 
-NametagEdit is a standalone plugin that is compatible with many versions. It is a great donation feature, and adds quality to your server.
+NametagEdit is a standalone plugin that is compatible with many versions. It is a great donation feature, and adds a unique look to your server.
 
 **My client crashes with the reason "Cannot remove from NTE #". Why is this?**
 
