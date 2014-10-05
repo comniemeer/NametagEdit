@@ -11,14 +11,9 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import ca.wacos.nametagedit.NametagAPI;
-import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
-import ca.wacos.nametagedit.NametagCommand;
 import ca.wacos.nametagedit.NametagEdit;
-import ca.wacos.nametagedit.SQLData;
 
 /**
  * This class loads all group/player data, and applies the tags during
@@ -44,23 +39,19 @@ public class NTEHandler {
 
     // Reloads files, and reapplies tags
     public void reload(CommandSender sender, boolean fromFile) {
-        if (plugin.databaseEnabled) {
-            new SQLData().runTaskAsynchronously(plugin);
+        if (fromFile) {
+            plugin.reloadConfig();
+            plugin.getFileUtils().loadFiles();
         } else {
-            if (fromFile) {
-                plugin.reloadConfig();
-                plugin.getFileUtils().loadFiles();
-            } else {
-                plugin.saveConfig();
-                saveFileData(plugin.getFileUtils().getPlayersFile(), plugin
-                        .getFileUtils().getGroupsFile());
-            }
-
-            loadFromFile(plugin.getFileUtils().getPlayersFile(), plugin
+            plugin.saveConfig();
+            saveFileData(plugin.getFileUtils().getPlayersFile(), plugin
                     .getFileUtils().getGroupsFile());
-
-            applyTags();
         }
+
+        loadFromFile(plugin.getFileUtils().getPlayersFile(), plugin
+                .getFileUtils().getGroupsFile());
+
+        applyTags();
 
         sender.sendMessage("§f[§6NametagEdit§f] §fSuccessfully reloaded files.");
     }
@@ -163,27 +154,6 @@ public class NTEHandler {
                     NametagManager.overlap(p.getName(), temp.get(1),
                             temp.get(2));
                 } else {
-                    String permission = "";
-
-                    Permission perm = null;
-
-                    for (String s : allGroups) {
-                        List<String> temp = groupData.get(s);
-                        perm = new Permission(temp.get(0),
-                                PermissionDefault.FALSE);
-                        if (p.hasPermission(perm)) {
-                            permission = temp.get(0);
-                        }
-                    }
-
-                    String group = permissions.get(permission);
-                    List<String> temp = groupData.get(group);
-
-                    if (temp != null) {
-                        NametagCommand.setNametagSoft(p.getName(), temp.get(1),
-                                temp.get(2), NametagChangeReason.GROUP_NODE);
-                    }
-
                     if (plugin.tabListDisabled) {
                         String str = "§f" + p.getName();
                         String tab = "";
@@ -197,45 +167,45 @@ public class NTEHandler {
         }
     }
 
-    // Applies tags to a specific player
-    public void applyTagToPlayer(Player p) {
-        String uuid = p.getUniqueId().toString();
-
-        NametagManager.clear(p.getName());
-
-        if (playerData.containsKey(uuid)) {
-            List<String> temp = playerData.get(uuid);
-            NametagManager.overlap(p.getName(), temp.get(1), temp.get(2));
-        } else {
-            String permission = "";
-
-            Permission perm = null;
-
-            for (String s : allGroups) {
-                List<String> temp = groupData.get(s);
-                perm = new Permission(temp.get(0), PermissionDefault.FALSE);
-                if (p.hasPermission(perm)) {
-                    permission = temp.get(0);
-                }
-            }
-
-            String group = permissions.get(permission);
-
-            List<String> temp = groupData.get(group);
-
-            if (temp != null) {
-                NametagCommand.setNametagSoft(p.getName(), temp.get(1),
-                        temp.get(2), NametagChangeReason.GROUP_NODE);
-            }
-        }
-
-        if (plugin.tabListDisabled) {
-            String str = "§f" + p.getName();
-            String tab = "";
-            for (int t = 0; t < str.length() && t < 16; t++) {
-                tab += str.charAt(t);
-            }
-            p.setPlayerListName(tab);
-        }
-    }
+//    // Applies tags to a specific player
+//    public void applyTagToPlayer(Player p) {
+//        String uuid = p.getUniqueId().toString();
+//
+//        NametagManager.clear(p.getName());
+//
+//        if (playerData.containsKey(uuid)) {
+//            List<String> temp = playerData.get(uuid);
+//            NametagManager.overlap(p.getName(), temp.get(1), temp.get(2));
+//        } else {
+//            String permission = "";
+//
+//            Permission perm = null;
+//
+//            for (String s : allGroups) {
+//                List<String> temp = groupData.get(s);
+//                perm = new Permission(temp.get(0), PermissionDefault.FALSE);
+//                if (p.hasPermission(perm)) {
+//                    permission = temp.get(0);
+//                }
+//            }
+//
+//            String group = permissions.get(permission);
+//
+//            List<String> temp = groupData.get(group);
+//
+//            if (temp != null) {
+//                NametagCommand.setNametagSoft(p.getName(), temp.get(1),
+//                        temp.get(2), NametagChangeReason.GROUP_NODE);
+//            }
+//        }
+//
+//        if (plugin.tabListDisabled) {
+//            String str = "§f" + p.getName();
+//            String tab = "";
+//            for (int t = 0; t < str.length() && t < 16; t++) {
+//                tab += str.charAt(t);
+//            }
+//            p.setPlayerListName(tab);
+//        }
+//    }
 }
