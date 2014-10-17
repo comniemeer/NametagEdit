@@ -23,14 +23,14 @@ Recently there has been uncertainty in the Minecraft community. With Craftbukkit
 | nte | groups set [prefix] [groupName] | Sets the prefix for a group |
 | nte | groups set [suffix] [groupName] | Sets the suffix for a group |
 
-=== Example Command Usage
+== Example Command Usage
 
-== Editing Invidiual Prefixes/Suffixes
+=== Editing Invidiual Prefixes/Suffixes
 Suppose we wish to have a nametag like: "[Admin] sgtcazeyt"
 The command would be: /nte prefix sgtcazeyt '[Admin] '
 The ' ' characters will be automatically removed, and allow you to use spaces
 
-== Creating/Editing Group Properties
+=== Creating/Editing Group Properties
 So we want to create, or edit a group. We can start by creating it:
 First, we'll use: /ne groups add MyGroup
 Second, we need to set the permission: /ne groups set perm MyGroup my.custom.permission
