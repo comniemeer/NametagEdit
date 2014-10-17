@@ -1,3 +1,17 @@
+v3.0-pre
+
+@sgtcaze
+
+[New Features]
+-  Temporary file handler replacement (so we didn't use net.minecraft.server FileUtils in Craftbukkit)
+
+[Improvements]
+- Collapsed SQL queries to be more compact
+- Improve Class names for readability
+
+[Deleted]
+- InventoryClickEvent and the GUI sorter to reduce Bukkit dependency (we are going to port NametagEdit)
+======================================
 v3.0
 
 @sgtcaze

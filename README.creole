@@ -6,6 +6,9 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 *BukkitDev: [[http://dev.bukkit.org/bukkit-plugins/nametagedit|Click Here]]
 *Dev Builds: [[http://ci.playmc.cc/job/NametagEdit|Click Here]]
 
+== 1.8+ Compatibility
+Recently there has been uncertainty in the Minecraft community. With Craftbukkit's DMCA, many projects have spawned to carryon the development of the minecraft multiplayer server. NametagEdit will be ported to [some] viable alternatives. Currenty, NametagEdit works with 1.5.2 - 1.8.0 (Spigot's protocol hack).
+
 == Commands
 
 | Command | Parameters | Description |
@@ -16,7 +19,6 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 | nte | groups list | Lists all loaded groups |
 | nte | groups add [groupName] | Creates a new group |
 | nte | groups remove [groupName] | Removes a group |
-| nte | groups order | Opens a GUI to organize group hierachy |
 | nte | groups set [perm] [groupName] | Sets the default permission for a group |
 | nte | groups set [prefix] [groupName] | Sets the prefix for a group |
 | nte | groups set [suffix] [groupName] | Sets the suffix for a group |
