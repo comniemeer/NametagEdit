@@ -21,16 +21,12 @@ public class MySQL {
 
         try {
             connection = plugin.getConnectionPool().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }
 
-        String query = "DELETE FROM `" + table + "` WHERE `" + type + "`='"
-                + id + "';";
+            String query = "DELETE FROM `" + table + "` WHERE `" + type
+                    + "`=?;";
 
-        try {
             PreparedStatement p = connection.prepareStatement(query);
+            p.setString(1, id);
             p.execute();
             p.close();
         } catch (SQLException e) {
@@ -53,17 +49,16 @@ public class MySQL {
 
         try {
             connection = plugin.getConnectionPool().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }
 
-        String query = "INSERT INTO `players` VALUES ('" + uuid + "', '" + name
-                + "', '" + prefix + "', '" + suffix
-                + "') ON DUPLICATE KEY UPDATE `prefix`='" + prefix
-                + "', `suffix`='" + suffix + "';";
-        try {
+            String query = "INSERT INTO `players` VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE `prefix`=?, `suffix`=?;";
+
             PreparedStatement p = connection.prepareStatement(query);
+            p.setString(1, uuid);
+            p.setString(2, name);
+            p.setString(3, prefix);
+            p.setString(4, suffix);
+            p.setString(5, prefix);
+            p.setString(6, suffix);
             p.execute();
             p.close();
         } catch (SQLException e) {
@@ -86,16 +81,13 @@ public class MySQL {
 
         try {
             connection = plugin.getConnectionPool().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }
 
-        try {
-            String overwriteQuery = "UPDATE `" + table + "` SET `" + field
-                    + "`='" + oper + "' WHERE `name`='" + group + "';";
+            String query = "UPDATE `" + table + "` SET `" + field
+                    + "`=? WHERE `name`=?;";
 
-            PreparedStatement p = connection.prepareStatement(overwriteQuery);
+            PreparedStatement p = connection.prepareStatement(query);
+            p.setString(1, oper);
+            p.setString(2, group);
             p.execute();
             p.close();
         } catch (SQLException e) {

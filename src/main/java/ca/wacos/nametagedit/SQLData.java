@@ -23,12 +23,6 @@ public class SQLData extends BukkitRunnable {
     public void run() {
         Connection connection = null;
 
-        try {
-            connection = plugin.getConnectionPool().getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         final HashMap<String, String> tPerms = new HashMap<>();
         final HashMap<String, List<String>> groupDataTemp = new HashMap<>();
         final HashMap<String, List<String>> playerDataTemp = new HashMap<>();
@@ -37,6 +31,8 @@ public class SQLData extends BukkitRunnable {
         String playerQuery = "SELECT * FROM `players`;";
 
         try {
+            connection = plugin.getConnectionPool().getConnection();
+
             ResultSet groupResults = connection.prepareStatement(groupQuery)
                     .executeQuery();
 

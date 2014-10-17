@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 /**
  * A small wrapper for the PacketPlayOutScoreboardTeam packet.
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings("all")
 public class PacketPlayOut {
 
     Object packet;

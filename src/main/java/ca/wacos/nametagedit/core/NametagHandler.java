@@ -26,7 +26,7 @@ import ca.wacos.nametagedit.SQLData;
  * 
  * @author sgtcaze
  */
-public class NTEHandler {
+public class NametagHandler {
 
     private NametagEdit plugin = NametagEdit.getInstance();
 
@@ -62,10 +62,10 @@ public class NTEHandler {
             applyTags();
         }
 
-        sender.sendMessage("§f[§6NametagEdit§f] §fSuccessfully reloaded files.");
+        sender.sendMessage("§3NametagEdit §4» §fSuccessfully reloaded files.");
     }
 
-    // Workaround for the deprecated getOnlinePlayers(). @Goblom suggested
+    // Workaround for the deprecated getOnlinePlayers()
     public List<Player> getOnline() {
         List<Player> list = new ArrayList<>();
 
@@ -232,9 +232,11 @@ public class NTEHandler {
         if (plugin.tabListDisabled) {
             String str = "§f" + p.getName();
             String tab = "";
+
             for (int t = 0; t < str.length() && t < 16; t++) {
                 tab += str.charAt(t);
             }
+
             p.setPlayerListName(tab);
         }
     }

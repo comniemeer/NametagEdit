@@ -20,7 +20,6 @@ public class PlayerJoin implements Listener {
         final Player p = e.getPlayer();
 
         NametagManager.sendTeamsToPlayer(p);
-
         NametagManager.clear(p.getName());
 
         new BukkitRunnable() {

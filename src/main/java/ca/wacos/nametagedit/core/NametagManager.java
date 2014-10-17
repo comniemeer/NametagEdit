@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
  * @author Levi Webb
  * 
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings("all")
 public class NametagManager {
 
     // Prefix to append to all team names (nothing to do with prefix/suffix)
@@ -28,9 +28,9 @@ public class NametagManager {
 
     private static List<Integer> list = new ArrayList<Integer>();
 
-    private static HashMap<TeamInfo, List<String>> teams = new HashMap<TeamInfo, List<String>>();
+    private static HashMap<TeamHandler, List<String>> teams = new HashMap<TeamHandler, List<String>>();
 
-    private static void addToTeam(TeamInfo team, String player) {
+    private static void addToTeam(TeamHandler team, String player) {
         removeFromTeam(player);
         List<String> list = teams.get(team);
         if (list != null) {
@@ -56,18 +56,19 @@ public class NametagManager {
         return Collections.unmodifiableList(list);
     }
 
-    private static void register(TeamInfo team) {
+    private static void register(TeamHandler team) {
         teams.put(team, new ArrayList<String>());
         sendPacketsAddTeam(team);
     }
 
-    private static void removeTeam(TeamInfo team) {
+    private static void removeTeam(TeamHandler team) {
         sendPacketsRemoveTeam(team);
         teams.remove(team);
     }
 
-    private static TeamInfo removeFromTeam(String player) {
-        for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
+    private static TeamHandler removeFromTeam(String player) {
+        for (TeamHandler team : teams.keySet().toArray(
+                new TeamHandler[teams.size()])) {
             List<String> list = teams.get(team);
             for (String p : list.toArray(new String[list.size()])) {
                 if (p.equals(player)) {
@@ -87,8 +88,9 @@ public class NametagManager {
         return null;
     }
 
-    private static TeamInfo getTeam(String name) {
-        for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
+    private static TeamHandler getTeam(String name) {
+        for (TeamHandler team : teams.keySet().toArray(
+                new TeamHandler[teams.size()])) {
             if (team.getName().equals(name)) {
                 return team;
             }
@@ -96,17 +98,18 @@ public class NametagManager {
         return null;
     }
 
-    private static TeamInfo[] getTeams() {
-        TeamInfo[] list = new TeamInfo[teams.size()];
+    private static TeamHandler[] getTeams() {
+        TeamHandler[] list = new TeamHandler[teams.size()];
         int at = 0;
-        for (TeamInfo team : teams.keySet().toArray(new TeamInfo[teams.size()])) {
+        for (TeamHandler team : teams.keySet().toArray(
+                new TeamHandler[teams.size()])) {
             list[at] = team;
             at++;
         }
         return list;
     }
 
-    private static String[] getTeamPlayers(TeamInfo team) {
+    private static String[] getTeamPlayers(TeamHandler team) {
         List<String> list = teams.get(team);
         if (list != null) {
 
@@ -121,7 +124,7 @@ public class NametagManager {
      * this plugin.
      */
     public static void load() {
-        for (TeamInfo t : getTeams()) {
+        for (TeamHandler t : getTeams()) {
             int entry = -1;
             try {
                 entry = Integer.parseInt(t.getName());
@@ -159,7 +162,7 @@ public class NametagManager {
 
         }
 
-        TeamInfo t = get(prefix, suffix);
+        TeamHandler t = get(prefix, suffix);
 
         addToTeam(t, player);
     }
@@ -188,7 +191,7 @@ public class NametagManager {
             suffix = "";
         }
 
-        TeamInfo t = get(prefix, suffix);
+        TeamHandler t = get(prefix, suffix);
 
         addToTeam(t, player);
     }
@@ -211,7 +214,7 @@ public class NametagManager {
      * @return the player's prefix
      */
     public static String getPrefix(String player) {
-        for (TeamInfo team : getTeams()) {
+        for (TeamHandler team : getTeams()) {
             for (String p : getTeamPlayers(team)) {
                 if (p.equals(player)) {
                     return team.getPrefix();
@@ -229,7 +232,7 @@ public class NametagManager {
      * @return the player's suffix
      */
     public static String getSuffix(String player) {
-        for (TeamInfo team : getTeams()) {
+        for (TeamHandler team : getTeams()) {
             for (String p : getTeamPlayers(team)) {
                 if (p.equals(player)) {
                     return team.getSuffix();
@@ -261,14 +264,14 @@ public class NametagManager {
      *            the team's suffix
      * @return the created team
      */
-    private static TeamInfo declareTeam(String name, String prefix,
+    private static TeamHandler declareTeam(String name, String prefix,
             String suffix) {
         if (getTeam(name) != null) {
-            TeamInfo team = getTeam(name);
+            TeamHandler team = getTeam(name);
             removeTeam(team);
         }
 
-        TeamInfo team = new TeamInfo(name);
+        TeamHandler team = new TeamHandler(name);
 
         team.setPrefix(prefix);
         team.setSuffix(suffix);
@@ -289,12 +292,12 @@ public class NametagManager {
      *            the team's suffix
      * @return a team with the corresponding prefix/suffix
      */
-    private static TeamInfo get(String prefix, String suffix) {
+    private static TeamHandler get(String prefix, String suffix) {
         update();
 
         for (int t : list.toArray(new Integer[list.size()])) {
             if (getTeam(TEAM_NAME_PREFIX + t) != null) {
-                TeamInfo team = getTeam(TEAM_NAME_PREFIX + t);
+                TeamHandler team = getTeam(TEAM_NAME_PREFIX + t);
 
                 if (team.getSuffix().equals(suffix)
                         && team.getPrefix().equals(prefix)) {
@@ -332,7 +335,7 @@ public class NametagManager {
      * Removes any teams that do not have any players in them.
      */
     private static void update() {
-        for (TeamInfo team : getTeams()) {
+        for (TeamHandler team : getTeams()) {
             int entry = -1;
             try {
                 entry = Integer.parseInt(team.getName());
@@ -356,7 +359,7 @@ public class NametagManager {
      */
     public static void sendTeamsToPlayer(Player p) {
         try {
-            for (TeamInfo team : getTeams()) {
+            for (TeamHandler team : getTeams()) {
                 PacketPlayOut mod = new PacketPlayOut(team.getName(),
                         team.getPrefix(), team.getSuffix(),
                         new ArrayList<String>(), 0);
@@ -378,7 +381,7 @@ public class NametagManager {
      * @param team
      *            the team to add
      */
-    private static void sendPacketsAddTeam(TeamInfo team) {
+    private static void sendPacketsAddTeam(TeamHandler team) {
         try {
             for (Player p : getOnline()) {
                 if (p != null) {
@@ -401,9 +404,9 @@ public class NametagManager {
      * @param team
      *            the team to remove
      */
-    private static void sendPacketsRemoveTeam(TeamInfo team) {
+    private static void sendPacketsRemoveTeam(TeamHandler team) {
         boolean cont = false;
-        for (TeamInfo t : getTeams()) {
+        for (TeamHandler t : getTeams()) {
             if (t == team) {
                 cont = true;
             }
@@ -436,9 +439,9 @@ public class NametagManager {
      * @param player
      *            the player to add
      */
-    private static void sendPacketsAddToTeam(TeamInfo team, String player) {
+    private static void sendPacketsAddToTeam(TeamHandler team, String player) {
         boolean cont = false;
-        for (TeamInfo t : getTeams()) {
+        for (TeamHandler t : getTeams()) {
             if (t == team) {
                 cont = true;
             }
@@ -471,9 +474,10 @@ public class NametagManager {
      * @param player
      *            the player to remove
      */
-    private static void sendPacketsRemoveFromTeam(TeamInfo team, String player) {
+    private static void sendPacketsRemoveFromTeam(TeamHandler team,
+            String player) {
         boolean cont = false;
-        for (TeamInfo t : getTeams()) {
+        for (TeamHandler t : getTeams()) {
             if (t == team) {
                 for (String p : getTeamPlayers(t)) {
                     if (p.equals(player)) {
@@ -507,7 +511,7 @@ public class NametagManager {
      * the plugin is disabled.
      */
     public static void reset() {
-        for (TeamInfo team : getTeams()) {
+        for (TeamHandler team : getTeams()) {
             removeTeam(team);
         }
     }

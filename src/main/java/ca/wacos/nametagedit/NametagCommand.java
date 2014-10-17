@@ -260,16 +260,6 @@ public class NametagCommand implements CommandExecutor {
                     sender.sendMessage(prefix + "§fSuccessfully removed §c"
                             + group);
                 }
-            } else if (args[1].equalsIgnoreCase("order")) {
-                if (sender instanceof Player) {
-                    if (plugin.databaseEnabled) {
-                        sender.sendMessage(prefix
-                                + "§fYou can only sort flat file groups.");
-                        return;
-                    }
-
-                    plugin.createOrganizer((Player) sender);
-                }
             } else if (args[1].equalsIgnoreCase("add")) {
                 if (args.length == 3) {
                     String group = args[2];
