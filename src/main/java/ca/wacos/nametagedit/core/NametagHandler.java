@@ -29,22 +29,63 @@ import ca.wacos.nametagedit.SQLData;
 public class NametagHandler {
 
     private NametagEdit plugin = NametagEdit.getInstance();
+    
+    private boolean useDatabase;
+    
+    private boolean tabListDisabled;
 
     // Stores all group names in order
-    public List<String> allGroups = new ArrayList<>();
+    private List<String> allGroups = new ArrayList<>();
 
     // Corresponds permission to group name
-    public HashMap<String, String> permissions = new HashMap<>();
+    private HashMap<String, String> permissions = new HashMap<>();
 
     // Stores all group names to permissions/prefix/suffix
-    public HashMap<String, List<String>> groupData = new HashMap<>();
+    private HashMap<String, List<String>> groupData = new HashMap<>();
 
     // Stores all player names to prefix/suffix
-    public HashMap<String, List<String>> playerData = new HashMap<>();
+    private HashMap<String, List<String>> playerData = new HashMap<>();
+    
+    public NametagHandler() {
+        this.useDatabase = plugin.getConfig().getBoolean("MySQL.Enabled");
+        this.tabListDisabled = plugin.getConfig().getBoolean("TabListDisabled");
+    }
+ 
+    public boolean usingDatabase() {
+        return useDatabase;
+    }
+
+    public List<String> getAllGroups() {
+        return allGroups;
+    }
+    
+    public HashMap<String, String> getPermissions() {
+        return permissions;
+    }
+    
+    public HashMap<String, List<String>> getGroupData() {
+        return groupData;
+    }
+    
+    public HashMap<String, List<String>> getPlayerData() {
+        return playerData;
+    }
+    
+    public void setPermissionsMap(HashMap<String, String> map) {
+        this.permissions = map;
+    }
+    
+    public void setGroupDataMap(HashMap<String, List<String>> map) {
+        this.groupData = map;
+    }
+    
+    public void setPlayerDataMap(HashMap<String, List<String>> map) {
+        this.playerData = map;
+    }
 
     // Reloads files, and reapplies tags
     public void reload(CommandSender sender, boolean fromFile) {
-        if (plugin.databaseEnabled) {
+        if (usingDatabase()) {
             new SQLData().runTaskAsynchronously(plugin);
         } else {
             if (fromFile) {
@@ -184,7 +225,7 @@ public class NametagHandler {
                                 temp.get(2), NametagChangeReason.GROUP_NODE);
                     }
 
-                    if (plugin.tabListDisabled) {
+                    if (tabListDisabled) {
                         String str = "§f" + p.getName();
                         String tab = "";
                         for (int t = 0; t < str.length() && t < 16; t++) {
@@ -229,7 +270,7 @@ public class NametagHandler {
             }
         }
 
-        if (plugin.tabListDisabled) {
+        if (tabListDisabled) {
             String str = "§f" + p.getName();
             String tab = "";
 

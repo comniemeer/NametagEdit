@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -37,11 +36,7 @@ public class NametagEdit extends JavaPlugin {
     private NametagHandler nteHandler;
     private NametagManager nametagManager;
 
-    public Inventory organizer;
-
     private BoneCP connectionPool;
-
-    public boolean tabListDisabled, databaseEnabled;
 
     @Override
     public void onEnable() {
@@ -51,26 +46,18 @@ public class NametagEdit extends JavaPlugin {
         fileUtils = new FileManager();
         nteHandler = new NametagHandler();
         nametagManager = new NametagManager();
-
-        FileConfiguration config = getConfig();
+        
+        getCommand("ne").setExecutor(new NametagCommand());
 
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerJoin(), this);
 
+        FileConfiguration config = getConfig();
+        
         if (config.getBoolean("Chat.Enabled")) {
             pm.registerEvents(new AsyncPlayerChat(), this);
         }
-
-        getCommand("ne").setExecutor(new NametagCommand());
-
-        saveDefaultConfig();
-        fileUtils.loadFiles();
-
-        tabListDisabled = config.getBoolean("TabListDisabled");
-        databaseEnabled = config.getBoolean("MySQL.Enabled");
-
-        NametagManager.load();
-
+        
         if (config.getBoolean("MetricsEnabled")) {
             try {
                 Metrics metrics = new Metrics(this);
@@ -80,12 +67,16 @@ public class NametagEdit extends JavaPlugin {
             }
         }
 
-        if (databaseEnabled) {
+        saveDefaultConfig();
+        fileUtils.loadFiles();
+
+        NametagManager.load();
+
+        if (nteHandler.usingDatabase()) {
             setupBoneCP();
             new SQLData().runTask(this);
         } else {
-            nteHandler.loadFromFile(fileUtils.getPlayersFile(),
-                    fileUtils.getGroupsFile());
+            nteHandler.loadFromFile(fileUtils.getPlayersFile(), fileUtils.getGroupsFile());
         }
 
         nteHandler.applyTags();
@@ -95,13 +86,10 @@ public class NametagEdit extends JavaPlugin {
     public void onDisable() {
         NametagManager.reset();
 
-        nteHandler.saveFileData(fileUtils.getPlayersFile(),
-                fileUtils.getGroupsFile());
+        nteHandler.saveFileData(fileUtils.getPlayersFile(), fileUtils.getGroupsFile());
 
-        if (databaseEnabled) {
-            if (connectionPool != null) {
-                connectionPool.shutdown();
-            }
+        if (connectionPool != null) {
+            connectionPool.shutdown();
         }
     }
 
@@ -137,6 +125,8 @@ public class NametagEdit extends JavaPlugin {
         String username = bconfig.getString("MySQL.Username");
         String password = bconfig.getString("MySQL.Password");
 
+        Connection connection = null;
+        
         try {
             BoneCPConfig config = new BoneCPConfig();
             config.setJdbcUrl(address);
@@ -146,19 +136,10 @@ public class NametagEdit extends JavaPlugin {
             config.setMaxConnectionsPerPartition(10);
             config.setPartitionCount(1);
             connectionPool = new BoneCP(config);
-        } catch (SQLException e) {
-            getLogger().severe(
-                    "The BoneCP connection pool could not be established!");
-            e.printStackTrace();
-            return;
-        }
-
-        Connection connection = null;
-
-        String playerTable = "CREATE TABLE IF NOT EXISTS `players` (`uuid` varchar(64) NOT NULL, `name` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`uuid`));";
-        String groupTable = "CREATE TABLE IF NOT EXISTS `groups` (`name` varchar(64) NOT NULL, `permission` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`name`));";
-
-        try {
+            
+            String playerTable = "CREATE TABLE IF NOT EXISTS `players` (`uuid` varchar(64) NOT NULL, `name` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`uuid`));";
+            String groupTable = "CREATE TABLE IF NOT EXISTS `groups` (`name` varchar(64) NOT NULL, `permission` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`name`));";
+       
             connection = connectionPool.getConnection();
 
             PreparedStatement p = connection.prepareStatement(playerTable);
@@ -167,10 +148,8 @@ public class NametagEdit extends JavaPlugin {
 
             PreparedStatement g = connection.prepareStatement(groupTable);
             g.execute();
-            g.close();
+            g.close(); 
         } catch (SQLException e) {
-            getLogger()
-                    .severe("The MySQL connection could not be established!");
             e.printStackTrace();
         } finally {
             if (connection != null) {

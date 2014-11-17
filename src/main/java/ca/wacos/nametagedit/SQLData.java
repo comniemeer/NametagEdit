@@ -70,28 +70,26 @@ public class SQLData extends BukkitRunnable {
                     e.printStackTrace();
                 }
             }
-        }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                plugin.getLogger().info(
-                        "[MySQL] Found " + groupDataTemp.size() + " groups");
-                plugin.getLogger().info(
-                        "[MySQL] Found " + playerDataTemp.size() + " players");
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    plugin.getLogger() .info("[MySQL] Found " + groupDataTemp.size() + " groups");
+                    plugin.getLogger().info("[MySQL] Found " + playerDataTemp.size() + " players");
 
-                plugin.getNTEHandler().permissions = tPerms;
-                plugin.getNTEHandler().groupData = groupDataTemp;
-                plugin.getNTEHandler().playerData = playerDataTemp;
+                    plugin.getNTEHandler().setPermissionsMap(tPerms);
+                    plugin.getNTEHandler().setGroupDataMap(groupDataTemp);
+                    plugin.getNTEHandler().setPlayerDataMap(playerDataTemp);
 
-                plugin.getNTEHandler().allGroups.clear();
+                    plugin.getNTEHandler().getAllGroups().clear();
 
-                for (String s : groupDataTemp.keySet()) {
-                    plugin.getNTEHandler().allGroups.add(s);
+                    for (String s : groupDataTemp.keySet()) {
+                        plugin.getNTEHandler().getAllGroups().add(s);
+                    }
+
+                    plugin.getNTEHandler().applyTags();
                 }
-
-                plugin.getNTEHandler().applyTags();
-            }
-        }.runTask(plugin);
+            }.runTask(plugin);
+        }
     }
 }

@@ -43,8 +43,7 @@ public class MySQL {
     }
 
     // Function updates a player value (prefix, suffix)
-    public void updatePlayerSQL(String uuid, String name, String prefix,
-            String suffix) {
+    public void updatePlayerSQL(String uuid, String name, String prefix, String suffix) {
         Connection connection = null;
 
         try {
@@ -75,8 +74,7 @@ public class MySQL {
     }
 
     // Function updates a group value (permission, prefix, suffix)
-    public void updateGroupSQL(String table, String field, String group,
-            String oper) {
+    public void updateGroupSQL(String table, String field, String group,  String oper) {
         Connection connection = null;
 
         try {

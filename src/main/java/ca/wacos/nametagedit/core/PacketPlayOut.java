@@ -16,7 +16,7 @@ import org.bukkit.Bukkit;
 @SuppressWarnings("all")
 public class PacketPlayOut {
 
-    Object packet;
+    private Object packet;
 
     private static Method getHandle;
     private static Method sendPacket;

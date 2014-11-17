@@ -11,6 +11,13 @@ import ca.wacos.nametagedit.NametagEdit;
 public class AsyncPlayerChat implements Listener {
 
     private NametagEdit plugin = NametagEdit.getInstance();
+    
+    private String format;
+    
+    public AsyncPlayerChat() {
+        this.format = plugin.getConfig().getString("Chat.Format");
+    }
+    
 
     // Formats chat if 'true' in the config
     @EventHandler
@@ -20,10 +27,9 @@ public class AsyncPlayerChat implements Listener {
         String prefix = NametagAPI.getPrefix(p.getName());
         String suffix = NametagAPI.getSuffix(p.getName());
 
-        String format = plugin.getConfig().getString("Chat.Format")
-                .replace("%prefix%", prefix).replace("%suffix%", suffix)
+        String temp =  format.replace("%prefix%", prefix).replace("%suffix%", suffix)
                 .replace("%name%", "%s").replace("%message%", "%s");
 
-        e.setFormat(format);
+        e.setFormat(temp);
     }
 }
