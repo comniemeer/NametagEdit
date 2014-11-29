@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 /**
  * A small wrapper for the PacketPlayOutScoreboardTeam packet.
  */
-@SuppressWarnings("all")
 public class PacketPlayOut {
 
     private Object packet;
@@ -26,43 +25,33 @@ public class PacketPlayOut {
 
     static {
         try {
-            version = Bukkit.getServer().getClass().getPackage().getName()
-                    .split("\\.")[3];
+            version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
             packetType = Class.forName(getPacketTeamClasspath());
 
-            Class<?> typeCraftPlayer = Class.forName("org.bukkit.craftbukkit."
-                    + version + ".entity.CraftPlayer");
-            Class<?> typeNMSPlayer = Class.forName("net.minecraft.server."
-                    + version + ".EntityPlayer");
-            Class<?> typePlayerConnection = Class
-                    .forName("net.minecraft.server." + version
-                            + ".PlayerConnection");
+            Class<?> typeCraftPlayer = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
+            Class<?> typeNMSPlayer = Class.forName("net.minecraft.server." + version + ".EntityPlayer");
+            Class<?> typePlayerConnection = Class.forName("net.minecraft.server." + version + ".PlayerConnection");
 
             getHandle = typeCraftPlayer.getMethod("getHandle");
             playerConnection = typeNMSPlayer.getField("playerConnection");
-            sendPacket = typePlayerConnection.getMethod("sendPacket", Class
-                    .forName("net.minecraft.server." + version + ".Packet"));
+            sendPacket = typePlayerConnection.getMethod("sendPacket", Class.forName("net.minecraft.server." + version + ".Packet"));
         } catch (Exception e) {
-            System.out.println("Failed to setup reflection for Packet209Mod!");
             e.printStackTrace();
         }
     }
 
-    PacketPlayOut(String name, String prefix, String suffix,
-            Collection players, int paramInt) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException,
-            NoSuchMethodException, NoSuchFieldException,
-            InvocationTargetException {
+    PacketPlayOut(String name, String prefix, String suffix, Collection players, int paramInt) throws ClassNotFoundException,
+            IllegalAccessException, InstantiationException, NoSuchMethodException, NoSuchFieldException, InvocationTargetException {
 
         packet = packetType.newInstance();
         setField("a", name);
-        setField("f", paramInt);
+        setField("h", paramInt);
 
         if ((paramInt == 0) || (paramInt == 2)) {
             setField("b", name);
             setField("c", prefix);
             setField("d", suffix);
-            setField("g", 1);
+            setField("g", players);
         }
         if (paramInt == 0) {
             addAll(players);
@@ -85,7 +74,7 @@ public class PacketPlayOut {
         }
 
         setField("a", name);
-        setField("f", paramInt);
+        setField("h", paramInt);
         addAll(players);
     }
 
@@ -101,31 +90,26 @@ public class PacketPlayOut {
         sendPacket.invoke(connection, packet);
     }
 
+    @Deprecated
     private void setField(String field, Object value)
             throws NoSuchFieldException, IllegalAccessException {
         Field f = packet.getClass().getDeclaredField(field);
         f.setAccessible(true);
         f.set(packet, value);
-
     }
 
-    private void addAll(Collection<?> col) throws NoSuchFieldException,
-            IllegalAccessException {
-        Field f = packet.getClass().getDeclaredField("e");
+    private void addAll(Collection<?> col) throws NoSuchFieldException, IllegalAccessException {
+        Field f = packet.getClass().getDeclaredField("g");
         f.setAccessible(true);
         ((Collection) f.get(packet)).addAll(col);
     }
 
     private static String getPacketTeamClasspath() {
         // v1_(7)_R1
-        if (Integer.valueOf(version.split("_")[1]) < 7
-                && Integer.valueOf(version.toLowerCase().split("_")[0].replace(
-                        "v", "")) == 1) {
-            return "net.minecraft.server." + version
-                    + ".Packet209SetScoreboardTeam";
+        if (Integer.valueOf(version.split("_")[1]) < 7 && Integer.valueOf(version.toLowerCase().split("_")[0].replace("v", "")) == 1) {
+            return "net.minecraft.server." + version + ".Packet209SetScoreboardTeam";
         } else {
-            return "net.minecraft.server." + version
-                    + ".PacketPlayOutScoreboardTeam";
+            return "net.minecraft.server." + version + ".PacketPlayOutScoreboardTeam";
         }
     }
 }
