@@ -26,9 +26,8 @@ public class AsyncPlayerChat implements Listener {
 
         String prefix = NametagAPI.getPrefix(p.getName());
         String suffix = NametagAPI.getSuffix(p.getName());
-
-        String temp =  format.replace("%prefix%", prefix).replace("%suffix%", suffix)
-                .replace("%name%", "%s").replace("%message%", "%s");
+        
+        String temp =  format.replace("%prefix%", prefix).replace("%suffix%", suffix);
 
         e.setFormat(temp);
     }

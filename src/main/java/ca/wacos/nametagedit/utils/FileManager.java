@@ -42,6 +42,7 @@ public class FileManager {
 
     public void loadFiles() {
         File groupsTemp = new File(plugin.getDataFolder(), "groups.yml");
+        
         if (!groupsTemp.exists()) {
             generateFile("groups.yml");
         }
@@ -50,6 +51,7 @@ public class FileManager {
         groups = YamlConfiguration.loadConfiguration(groupsFile);
 
         File playersTemp = new File(plugin.getDataFolder(), "players.yml");
+        
         if (!playersTemp.exists()) {
             generateFile("players.yml");
         }

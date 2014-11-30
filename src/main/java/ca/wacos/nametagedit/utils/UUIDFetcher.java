@@ -49,8 +49,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
             String body = JSONArray.toJSONString(names.subList(i * 100,
                     Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
-            JSONArray array = (JSONArray) jsonParser
-                    .parse(new InputStreamReader(connection.getInputStream()));
+            JSONArray array = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
             for (Object profile : array) {
                 JSONObject jsonProfile = (JSONObject) profile;
                 String id = (String) jsonProfile.get("id");
@@ -65,8 +64,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
         return uuidMap;
     }
 
-    private static void writeBody(HttpURLConnection connection, String body)
-            throws Exception {
+    private static void writeBody(HttpURLConnection connection, String body) throws Exception {
         OutputStream stream = connection.getOutputStream();
         stream.write(body.getBytes());
         stream.flush();

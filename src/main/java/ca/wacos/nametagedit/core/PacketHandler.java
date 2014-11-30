@@ -8,12 +8,13 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+
 import org.bukkit.Bukkit;
 
 /**
  * A small wrapper for the PacketPlayOutScoreboardTeam packet.
  */
-public class PacketPlayOut {
+public class PacketHandler {
 
     private Object packet;
 
@@ -40,7 +41,7 @@ public class PacketPlayOut {
         }
     }
 
-    PacketPlayOut(String name, String prefix, String suffix, Collection players, int paramInt) throws ClassNotFoundException,
+    public PacketHandler(String name, String prefix, String suffix, Collection<?> players, int paramInt) throws ClassNotFoundException,
             IllegalAccessException, InstantiationException, NoSuchMethodException, NoSuchFieldException, InvocationTargetException {
 
         packet = packetType.newInstance();
@@ -58,11 +59,8 @@ public class PacketPlayOut {
         }
     }
 
-    PacketPlayOut(String name, Collection players, int paramInt)
-            throws ClassNotFoundException, IllegalAccessException,
-            InstantiationException, NoSuchMethodException,
-            NoSuchFieldException, InvocationTargetException {
-
+    public PacketHandler(String name, Collection<?> players, int paramInt) throws ClassNotFoundException, IllegalAccessException, InstantiationException, 
+            NoSuchMethodException, NoSuchFieldException, InvocationTargetException {
         packet = packetType.newInstance();
 
         if ((paramInt != 3) && (paramInt != 4)) {
@@ -78,11 +76,8 @@ public class PacketPlayOut {
         addAll(players);
     }
 
-    void sendToPlayer(Player bukkitPlayer) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException,
-            InvocationTargetException, NoSuchMethodException,
-            NoSuchFieldException {
-
+    public void sendToPlayer(Player bukkitPlayer) throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException, 
+                 NoSuchMethodException, NoSuchFieldException {
         Object player = getHandle.invoke(bukkitPlayer);
 
         Object connection = playerConnection.get(player);
@@ -90,17 +85,16 @@ public class PacketPlayOut {
         sendPacket.invoke(connection, packet);
     }
 
-    @Deprecated
-    private void setField(String field, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
+    private void setField(String field, Object value) throws NoSuchFieldException, IllegalAccessException {
         Field f = packet.getClass().getDeclaredField(field);
         f.setAccessible(true);
         f.set(packet, value);
     }
 
+    @SuppressWarnings("all")
     private void addAll(Collection<?> col) throws NoSuchFieldException, IllegalAccessException {
         Field f = packet.getClass().getDeclaredField("g");
-        f.setAccessible(true);
+        f.setAccessible(true);        
         ((Collection) f.get(packet)).addAll(col);
     }
 

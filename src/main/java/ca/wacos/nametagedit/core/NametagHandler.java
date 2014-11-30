@@ -16,9 +16,9 @@ import org.bukkit.permissions.PermissionDefault;
 
 import ca.wacos.nametagedit.NametagAPI;
 import ca.wacos.nametagedit.NametagChangeEvent.NametagChangeReason;
+import ca.wacos.nametagedit.tasks.SQLDataTask;
 import ca.wacos.nametagedit.NametagCommand;
 import ca.wacos.nametagedit.NametagEdit;
-import ca.wacos.nametagedit.SQLData;
 
 /**
  * This class loads all group/player data, and applies the tags during
@@ -86,19 +86,17 @@ public class NametagHandler {
     // Reloads files, and reapplies tags
     public void reload(CommandSender sender, boolean fromFile) {
         if (usingDatabase()) {
-            new SQLData().runTaskAsynchronously(plugin);
+            new SQLDataTask().runTaskAsynchronously(plugin);
         } else {
             if (fromFile) {
                 plugin.reloadConfig();
                 plugin.getFileUtils().loadFiles();
             } else {
                 plugin.saveConfig();
-                saveFileData(plugin.getFileUtils().getPlayersFile(), plugin
-                        .getFileUtils().getGroupsFile());
+                saveFileData(plugin.getFileUtils().getPlayersFile(), plugin.getFileUtils().getGroupsFile());
             }
 
-            loadFromFile(plugin.getFileUtils().getPlayersFile(), plugin
-                    .getFileUtils().getGroupsFile());
+            loadFromFile(plugin.getFileUtils().getPlayersFile(), plugin.getFileUtils().getGroupsFile());
 
             applyTags();
         }
@@ -118,13 +116,11 @@ public class NametagHandler {
 
     // Format input string
     private String format(String input) {
-        return NametagAPI.trim(ChatColor.translateAlternateColorCodes('&',
-                input));
+        return NametagAPI.trim(ChatColor.translateAlternateColorCodes('&', input));
     }
 
     // Saves all player and group data
-    public void saveFileData(YamlConfiguration playersFile,
-            YamlConfiguration groupsFile) {
+    public void saveFileData(YamlConfiguration playersFile, YamlConfiguration groupsFile) {
         groupsFile.set("Order", allGroups);
 
         for (String s : playerData.keySet()) {
@@ -151,8 +147,7 @@ public class NametagHandler {
     }
 
     // Loads all player and group data (file)
-    public void loadFromFile(YamlConfiguration playersFile,
-            YamlConfiguration groupsFile) {
+    public void loadFromFile(YamlConfiguration playersFile, YamlConfiguration groupsFile) {
         groupData.clear();
         playerData.clear();
 
@@ -176,8 +171,7 @@ public class NametagHandler {
             permissions.put(perm, s);
         }
 
-        for (String s : playersFile.getConfigurationSection("Players").getKeys(
-                false)) {
+        for (String s : playersFile.getConfigurationSection("Players").getKeys(false)) {
             List<String> tempData = new ArrayList<>();
             String name = playersFile.getString("Players." + s + ".Name");
             String prefix = playersFile.getString("Players." + s + ".Prefix");

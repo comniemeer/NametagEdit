@@ -1,9 +1,6 @@
 package ca.wacos.nametagedit;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,11 +12,11 @@ import ca.wacos.nametagedit.core.NametagHandler;
 import ca.wacos.nametagedit.core.NametagManager;
 import ca.wacos.nametagedit.events.AsyncPlayerChat;
 import ca.wacos.nametagedit.events.PlayerJoin;
+import ca.wacos.nametagedit.tasks.SQLDataTask;
+import ca.wacos.nametagedit.tasks.TableCreatorTask;
 import ca.wacos.nametagedit.utils.FileManager;
-import ca.wacos.nametagedit.utils.MySQL;
 
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * This is the main class for the NametagEdit plugin.
@@ -31,18 +28,16 @@ public class NametagEdit extends JavaPlugin {
 
     private static NametagEdit instance;
 
-    private MySQL mySQL;
     private FileManager fileUtils;
     private NametagHandler nteHandler;
     private NametagManager nametagManager;
 
-    private BoneCP connectionPool;
+    private HikariDataSource connectionPool;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        mySQL = new MySQL();
         fileUtils = new FileManager();
         nteHandler = new NametagHandler();
         nametagManager = new NametagManager();
@@ -73,8 +68,9 @@ public class NametagEdit extends JavaPlugin {
         NametagManager.load();
 
         if (nteHandler.usingDatabase()) {
-            setupBoneCP();
-            new SQLData().runTask(this);
+            setupHikari();
+            new TableCreatorTask().runTask(this);
+            new SQLDataTask().runTask(this);
         } else {
             nteHandler.loadFromFile(fileUtils.getPlayersFile(), fileUtils.getGroupsFile());
         }
@@ -108,57 +104,26 @@ public class NametagEdit extends JavaPlugin {
     public FileManager getFileUtils() {
         return fileUtils;
     }
-
-    public MySQL getMySQL() {
-        return mySQL;
-    }
-
-    public BoneCP getConnectionPool() {
+    
+    public HikariDataSource getConnectionPool() {
         return connectionPool;
     }
+    
+    private void setupHikari() {
+        FileConfiguration config = getConfig();
 
-    private void setupBoneCP() {
-        FileConfiguration bconfig = getConfig();
-        String address = "jdbc:mysql://" + bconfig.getString("MySQL.Hostname")
-                + ":" + bconfig.getString("MySQL.Port") + "/"
-                + bconfig.getString("MySQL.Database");
-        String username = bconfig.getString("MySQL.Username");
-        String password = bconfig.getString("MySQL.Password");
+        String address = config.getString("MySQL.Hostname");
+        String name = config.getString("MySQL.Database");
+        String username = config.getString("MySQL.Username");
+        String password = config.getString("MySQL.Password");
 
-        Connection connection = null;
-        
-        try {
-            BoneCPConfig config = new BoneCPConfig();
-            config.setJdbcUrl(address);
-            config.setUsername(username);
-            config.setPassword(password);
-            config.setMinConnectionsPerPartition(5);
-            config.setMaxConnectionsPerPartition(10);
-            config.setPartitionCount(1);
-            connectionPool = new BoneCP(config);
-            
-            String playerTable = "CREATE TABLE IF NOT EXISTS `players` (`uuid` varchar(64) NOT NULL, `name` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`uuid`));";
-            String groupTable = "CREATE TABLE IF NOT EXISTS `groups` (`name` varchar(64) NOT NULL, `permission` varchar(16) NOT NULL, `prefix` varchar(16) NOT NULL, `suffix` varchar(16) NOT NULL, PRIMARY KEY (`name`));";
-       
-            connection = connectionPool.getConnection();
-
-            PreparedStatement p = connection.prepareStatement(playerTable);
-            p.execute();
-            p.close();
-
-            PreparedStatement g = connection.prepareStatement(groupTable);
-            g.execute();
-            g.close(); 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        connectionPool = new HikariDataSource();
+        connectionPool.setMaximumPoolSize(5);
+        connectionPool.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        connectionPool.addDataSourceProperty("serverName", address);
+        connectionPool.addDataSourceProperty("port", "3306");
+        connectionPool.addDataSourceProperty("databaseName", name);
+        connectionPool.addDataSourceProperty("user", username);
+        connectionPool.addDataSourceProperty("password", password);   
     }
 }

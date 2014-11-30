@@ -264,8 +264,7 @@ public class NametagManager {
      *            the team's suffix
      * @return the created team
      */
-    private static TeamHandler declareTeam(String name, String prefix,
-            String suffix) {
+    private static TeamHandler declareTeam(String name, String prefix, String suffix) {
         if (getTeam(name) != null) {
             TeamHandler team = getTeam(name);
             removeTeam(team);
@@ -360,17 +359,15 @@ public class NametagManager {
     public static void sendTeamsToPlayer(Player p) {
         try {
             for (TeamHandler team : getTeams()) {
-                PacketPlayOut mod = new PacketPlayOut(team.getName(),
+                PacketHandler mod = new PacketHandler(team.getName(),
                         team.getPrefix(), team.getSuffix(),
                         new ArrayList<String>(), 0);
                 mod.sendToPlayer(p);
-                mod = new PacketPlayOut(team.getName(),
+                mod = new PacketHandler(team.getName(),
                         Arrays.asList(getTeamPlayers(team)), 3);
                 mod.sendToPlayer(p);
             }
         } catch (Exception e) {
-            System.out
-                    .println("[NametagEdit] Failed to send packet for player.");
             e.printStackTrace();
         }
     }
@@ -385,15 +382,13 @@ public class NametagManager {
         try {
             for (Player p : getOnline()) {
                 if (p != null) {
-                    PacketPlayOut mod = new PacketPlayOut(team.getName(),
+                    PacketHandler mod = new PacketHandler(team.getName(),
                             team.getPrefix(), team.getSuffix(),
                             new ArrayList<String>(), 0);
                     mod.sendToPlayer(p);
                 }
             }
         } catch (Exception e) {
-            System.out
-                    .println("[NametagEdit] Failed to send packet for player.");
             e.printStackTrace();
         }
     }
@@ -418,15 +413,13 @@ public class NametagManager {
         try {
             for (Player p : getOnline()) {
                 if (p != null) {
-                    PacketPlayOut mod = new PacketPlayOut(team.getName(),
+                    PacketHandler mod = new PacketHandler(team.getName(),
                             team.getPrefix(), team.getSuffix(),
                             new ArrayList<String>(), 1);
                     mod.sendToPlayer(p);
                 }
             }
         } catch (Exception e) {
-            System.out
-                    .println("[NametagEdit] Failed to send packet for player.");
             e.printStackTrace();
         }
     }
@@ -453,14 +446,12 @@ public class NametagManager {
         try {
             for (Player p : getOnline()) {
                 if (p != null) {
-                    PacketPlayOut mod = new PacketPlayOut(team.getName(),
+                    PacketHandler mod = new PacketHandler(team.getName(),
                             Arrays.asList(player), 3);
                     mod.sendToPlayer(p);
                 }
             }
         } catch (Exception e) {
-            System.out
-                    .println("[NametagEdit] Failed to send packet for player.");
             e.printStackTrace();
         }
     }
@@ -474,8 +465,7 @@ public class NametagManager {
      * @param player
      *            the player to remove
      */
-    private static void sendPacketsRemoveFromTeam(TeamHandler team,
-            String player) {
+    private static void sendPacketsRemoveFromTeam(TeamHandler team, String player) {
         boolean cont = false;
         for (TeamHandler t : getTeams()) {
             if (t == team) {
@@ -486,6 +476,7 @@ public class NametagManager {
                 }
             }
         }
+        
         if (!cont) {
             return;
         }
@@ -493,15 +484,13 @@ public class NametagManager {
         try {
             for (Player p : getOnline()) {
                 if (p != null) {
-                    PacketPlayOut mod = new PacketPlayOut(team.getName(),
+                    PacketHandler mod = new PacketHandler(team.getName(),
                             Arrays.asList(player), 4);
 
                     mod.sendToPlayer(p);
                 }
             }
         } catch (Exception e) {
-            System.out
-                    .println("[NametagEdit] Failed to send packet for player.");
             e.printStackTrace();
         }
     }

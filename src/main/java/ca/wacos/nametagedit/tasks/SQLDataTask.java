@@ -1,4 +1,4 @@
-package ca.wacos.nametagedit;
+package ca.wacos.nametagedit.tasks;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,13 +9,15 @@ import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
+import ca.wacos.nametagedit.NametagEdit;
+
 /**
  * This class is responsible for grabbing all data from the database and caching
  * it
  * 
  * @author sgtcaze
  */
-public class SQLData extends BukkitRunnable {
+public class SQLDataTask extends BukkitRunnable {
 
     private NametagEdit plugin = NametagEdit.getInstance();
 
@@ -33,30 +35,20 @@ public class SQLData extends BukkitRunnable {
         try {
             connection = plugin.getConnectionPool().getConnection();
 
-            ResultSet groupResults = connection.prepareStatement(groupQuery)
-                    .executeQuery();
+            ResultSet groupResults = connection.prepareStatement(groupQuery).executeQuery();
 
             while (groupResults.next()) {
-                groupDataTemp.put(groupResults.getString("name"), Arrays
-                        .asList(groupResults.getString("permission"),
-                                groupResults.getString("prefix"),
-                                groupResults.getString("suffix")));
-                tPerms.put(groupResults.getString("permission"),
-                        groupResults.getString("name"));
+                groupDataTemp.put(groupResults.getString("name"), Arrays.asList(groupResults.getString("permission"), groupResults.getString("prefix"), groupResults.getString("suffix")));
+                tPerms.put(groupResults.getString("permission"), groupResults.getString("name"));
             }
 
             groupResults.close();
 
-            ResultSet playerResults = connection.prepareStatement(playerQuery)
-                    .executeQuery();
+            ResultSet playerResults = connection.prepareStatement(playerQuery).executeQuery();
 
             while (playerResults.next()) {
-                playerDataTemp.put(playerResults.getString("uuid"), Arrays
-                        .asList(playerResults.getString("name"),
-                                playerResults.getString("prefix").replace("&",
-                                        "§"),
-                                playerResults.getString("suffix").replace("&",
-                                        "§")));
+                playerDataTemp.put(playerResults.getString("uuid"), Arrays.asList(playerResults.getString("name"), playerResults.getString("prefix").replace("&", "§"),
+                                playerResults.getString("suffix").replace("&", "§")));
             }
 
             playerResults.close();
@@ -74,7 +66,7 @@ public class SQLData extends BukkitRunnable {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    plugin.getLogger() .info("[MySQL] Found " + groupDataTemp.size() + " groups");
+                    plugin.getLogger().info("[MySQL] Found " + groupDataTemp.size() + " groups");
                     plugin.getLogger().info("[MySQL] Found " + playerDataTemp.size() + " players");
 
                     plugin.getNTEHandler().setPermissionsMap(tPerms);
