@@ -1,3 +1,17 @@
+v3.0-beta
+
+@sgtcaze
+[Fixes]
+- Compatability for 1.8 Spigot
+
+[Improvements]
+- Cleaned up all tasks
+- Cleaned up classes in general
+
+[Deleted]
+- MySQL handler class
+
+=====================================
 v3.0-pre
 
 @sgtcaze

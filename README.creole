@@ -6,7 +6,7 @@ NametagEdit is an easy to configure plugin that allows users to change their nam
 *BukkitDev: [[http://dev.bukkit.org/bukkit-plugins/nametagedit|Click Here]]
 *Dev Builds: [[http://ci.playmc.cc/job/NametagEdit|Click Here]]
 
-== Spigot for 1.5.2 through 1.8
+== Versions for 1.5.2 through 1.8
 On the Jenkins, builds #10 and above support 1.8+ Spigot. #9 supports 1.5.2 - 1.8 "Spigot Protocol Hack".
 
 == Commands
