@@ -52,7 +52,7 @@ public class PacketHandler {
             setField("b", name);
             setField("c", prefix);
             setField("d", suffix);
-            setField("g", players);
+            setField("i", 1);
         }
         if (paramInt == 0) {
             addAll(players);

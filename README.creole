@@ -1,13 +1,13 @@
 = NametagEdit
 
 == Description
-NametagEdit is an easy to configure plugin that allows users to change their nametags and tab names. With NametagEdit, users can add an additional 16 characters before and after their name. Additionally, the reflection in use will keep the plugin compatible with several minecraft versions (currently compatible with 1.5.2 - 1.7.10).
+NametagEdit is an easy to configure plugin that allows users to change their nametags and tab names. With NametagEdit, users can add an additional 16 characters before and after their name. Additionally, the reflection in use will keep the plugin compatible with several minecraft versions (currently compatible with 1.5.2 - 1.8.1).
 
 *BukkitDev: [[http://dev.bukkit.org/bukkit-plugins/nametagedit|Click Here]]
 *Dev Builds: [[http://ci.playmc.cc/job/NametagEdit|Click Here]]
 
-== 1.8+ Compatibility
-Recently there has been uncertainty in the Minecraft community. With Craftbukkit's DMCA, many projects have spawned to carryon the development of the minecraft multiplayer server. NametagEdit will be ported to [some] viable alternatives. Currenty, NametagEdit works with 1.5.2 - 1.8.0 (Spigot's protocol hack).
+== Spigot for 1.5.2 through 1.8
+On the Jenkins, builds #10 and above support 1.8+ Spigot. #9 supports 1.5.2 - 1.8 "Spigot Protocol Hack".
 
 == Commands
 
@@ -26,8 +26,18 @@ Recently there has been uncertainty in the Minecraft community. With Craftbukkit
 == Example Command Usage
 
 === Editing Invidiual Prefixes/Suffixes
-Suppose we wish to have a nametag like: "[Admin] sgtcazeyt"
-The command would be: /nte prefix sgtcazeyt '[Admin] '
+Suppose we wish to have a nametag like
+
+{{{
+[Admin] sgtcazeyt
+}}}
+
+The command would be:
+
+{{{
+/nte prefix sgtcazeyt '[Admin] '
+}}}
+
 The ' ' characters will be automatically removed, and allow you to use spaces
 
 === Creating/Editing Group Properties
@@ -75,9 +85,9 @@ When arranging your groups.yml, please have the order be ascending. Meaning, hav
 {{{
 Groups:
   Moderator: # This is the 'key' or the thing to distinguish this group
-  Permission: nte.moderator # This is the permission required to have this nametag - it can be anything
-  Prefix: '&2' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended 
-  Suffix: '&f'
+     Permission: nte.moderator # This is the permission required to have this nametag - it can be anything
+     Prefix: '&2' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended 
+     Suffix: '&f'
 }}}
 
 === players.yml
@@ -85,9 +95,9 @@ Groups:
 {{{
 Players:
   b5ccebaa-0623-4370-af73-0ec985dfa3b0: # This is the 'key' to identify the players
-  Name: sgtcazeyt # This is the friendly name of the player
-  Prefix: '&b' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended
-  Suffix: '&c'
+     Name: sgtcazeyt # This is the friendly name of the player
+     Prefix: '&b' # Both Prefix/Suffix are REQUIRED, even if they are blank. String length will be automatically appended
+     Suffix: '&c'
 }}}
 
 == FAQ

@@ -15,7 +15,7 @@ MetricsEnabled: true
 # If enabled, this plugin will format the chat
 Chat:
   Enabled: false
-  Format: "%prefix% %name% %suffix%: %message%"
+  Format: "%prefix% %s %suffix%: %s"
   
 # If enabled, NametagEdit will use database support
 MySQL:
