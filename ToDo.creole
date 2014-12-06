@@ -1,0 +1,14 @@
+= ToDo
+
+== Improvements
+*Cleanup the API
+*Simplify the command class
+*Document more parts of the plugin
+
+== New Features
+*Add option to make API changes persistent/temporary
+*Possible under Nametag altering
+
+== Fixes
+*Resolve issues with file reloading
+*Resolve issues with MySQL storage
