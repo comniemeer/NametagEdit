@@ -1,4 +1,6 @@
-v3.0-beta
+= Changelogs
+
+== v3.0-beta
 
 @sgtcaze
 [Fixes]
@@ -11,8 +13,7 @@ v3.0-beta
 [Deleted]
 - MySQL handler class
 
-=====================================
-v3.0-pre
+== v3.0-pre
 
 @sgtcaze
 
@@ -25,8 +26,8 @@ v3.0-pre
 
 [Deleted]
 - InventoryClickEvent and the GUI sorter to reduce Bukkit dependency (we are going to port NametagEdit)
-======================================
-v3.0
+
+== v3.0
 
 @sgtcaze
 [Fixes]
@@ -54,16 +55,16 @@ rather than using static objects/variables
 - Add Chat formatter option
 - Added MySQL support with a BoneCP connection pool integration
 - Added /ne groups base command (create groups, alter attributes)
-======================================
-v2.5.2
+
+== v2.5.2
 
 @sgtcaze
 [New Features]
 - Updated dependencies
 - Add BETA UUID support for players
 - Change default players.txt for update clarity
-======================================
-v2.3
+
+== v2.3
 
 @dmhacker
 [Fixes]
@@ -72,8 +73,8 @@ v2.3
 @sanjay900
 [Fixes]
 - Fixed client crashes on PermissionsEX group compatibility 
-======================================
-v2.2
+
+== v2.2
 
 @sgtcaze
 [Improvements]
@@ -84,8 +85,7 @@ v2.2
 [Fixes]
 - Fixed nullpointerexception on PlayerLoader
 
-======================================
-v2.1
+== v2.1
 
 @sgtcaze
 [Fixes]
@@ -106,8 +106,8 @@ v2.1
 - New permission: NametagEdit.update - Allows the command sender to update
 - Added when a player with the necessary permission joins, with updater enabled, they will be
   notified of the available update.
-======================================
-v2.0
+
+== v2.0
 
 @sgtcaze
 [Fixes]
@@ -117,8 +117,7 @@ v2.0
 - Added configurable option to disable console print
 - Replace updater with newer, Bukkit compliant updater
 
-======================================
-v1.9
+== v1.9
 
 @sgtcaze
 [Fixes]
