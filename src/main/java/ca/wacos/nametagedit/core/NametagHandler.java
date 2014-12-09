@@ -118,6 +118,15 @@ public class NametagHandler {
     private String format(String input) {
         return NametagAPI.trim(ChatColor.translateAlternateColorCodes('&', input));
     }
+    
+    private void setBlankTag(Player p) {
+        String str = "§f" + p.getName();
+        String tab = "";
+        for (int t = 0; t < str.length() && t < 16; t++) {
+            tab += str.charAt(t);
+        }
+        p.setPlayerListName(tab);
+    }
 
     // Saves all player and group data
     public void saveFileData(YamlConfiguration playersFile, YamlConfiguration groupsFile) {
@@ -125,22 +134,16 @@ public class NametagHandler {
 
         for (String s : playerData.keySet()) {
             List<String> temp = playerData.get(s);
-            playersFile.set("Players." + s + ".Name",
-                    temp.get(0).replace("§", "&"));
-            playersFile.set("Players." + s + ".Prefix",
-                    temp.get(1).replace("§", "&"));
-            playersFile.set("Players." + s + ".Suffix",
-                    temp.get(2).replace("§", "&"));
+            playersFile.set("Players." + s + ".Name", temp.get(0).replace("§", "&"));
+            playersFile.set("Players." + s + ".Prefix", temp.get(1).replace("§", "&"));
+            playersFile.set("Players." + s + ".Suffix", temp.get(2).replace("§", "&"));
         }
 
         for (String s : groupData.keySet()) {
             List<String> temp = groupData.get(s);
-            groupsFile.set("Groups." + s + ".Permission",
-                    temp.get(0).replace("§", "&"));
-            groupsFile.set("Groups." + s + ".Prefix",
-                    temp.get(1).replace("§", "&"));
-            groupsFile.set("Groups." + s + ".Suffix",
-                    temp.get(2).replace("§", "&"));
+            groupsFile.set("Groups." + s + ".Permission", temp.get(0).replace("§", "&"));
+            groupsFile.set("Groups." + s + ".Prefix", temp.get(1).replace("§", "&"));
+            groupsFile.set("Groups." + s + ".Suffix", temp.get(2).replace("§", "&"));
         }
 
         plugin.getFileUtils().saveAllFiles();
@@ -215,17 +218,11 @@ public class NametagHandler {
                     List<String> temp = groupData.get(group);
 
                     if (temp != null) {
-                        NametagCommand.setNametagSoft(p.getName(), temp.get(1),
-                                temp.get(2), NametagChangeReason.GROUP_NODE);
+                        NametagCommand.setNametagSoft(p.getName(), temp.get(1), temp.get(2), NametagChangeReason.GROUP_NODE);
                     }
 
                     if (tabListDisabled) {
-                        String str = "§f" + p.getName();
-                        String tab = "";
-                        for (int t = 0; t < str.length() && t < 16; t++) {
-                            tab += str.charAt(t);
-                        }
-                        p.setPlayerListName(tab);
+                        setBlankTag(p);
                     }
                 }
             }
@@ -259,20 +256,12 @@ public class NametagHandler {
             List<String> temp = groupData.get(group);
 
             if (temp != null) {
-                NametagCommand.setNametagSoft(p.getName(), temp.get(1),
-                        temp.get(2), NametagChangeReason.GROUP_NODE);
+                NametagCommand.setNametagSoft(p.getName(), temp.get(1), temp.get(2), NametagChangeReason.GROUP_NODE);
             }
         }
 
         if (tabListDisabled) {
-            String str = "§f" + p.getName();
-            String tab = "";
-
-            for (int t = 0; t < str.length() && t < 16; t++) {
-                tab += str.charAt(t);
-            }
-
-            p.setPlayerListName(tab);
+            setBlankTag(p);
         }
     }
 }

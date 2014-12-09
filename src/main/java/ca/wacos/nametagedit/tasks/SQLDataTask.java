@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import ca.wacos.nametagedit.NametagEdit;
@@ -47,8 +48,8 @@ public class SQLDataTask extends BukkitRunnable {
             ResultSet playerResults = connection.prepareStatement(playerQuery).executeQuery();
 
             while (playerResults.next()) {
-                playerDataTemp.put(playerResults.getString("uuid"), Arrays.asList(playerResults.getString("name"), playerResults.getString("prefix").replace("&", "§"),
-                                playerResults.getString("suffix").replace("&", "§")));
+                playerDataTemp.put(playerResults.getString("uuid"), Arrays.asList(playerResults.getString("name"), colorize(playerResults.getString("prefix")),
+                                colorize(playerResults.getString("suffix"))));
             }
 
             playerResults.close();
@@ -83,5 +84,9 @@ public class SQLDataTask extends BukkitRunnable {
                 }
             }.runTask(plugin);
         }
+    }
+    
+    private String colorize(String input) {
+        return ChatColor.translateAlternateColorCodes('&', input);
     }
 }
