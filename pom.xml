@@ -57,7 +57,7 @@
          <url>http://repo.mcstats.org/content/repositories/public</url>
       </repository>
       <repository>
-	 <id>ci-repo</id>
+	 <id>upstream</id>
 	 <url>http://ci.playmc.cc/plugin/repository/everything</url>
       </repository>
    </repositories>
