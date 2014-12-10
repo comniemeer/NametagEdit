@@ -56,6 +56,10 @@
          <id>Plugin Metrics</id>
          <url>http://repo.mcstats.org/content/repositories/public</url>
       </repository>
+      <repository>
+	 <id>ci-repo</id>
+	 <url>http://ci.playmc.cc/plugin/repository/everything</url>
+      </repository>
    </repositories>
    <!-- Builds NametagEdit -->
    <build>
