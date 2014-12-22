@@ -195,6 +195,6 @@ public class NametagChangeEvent extends Event implements Cancellable {
      * Represents the reason or cause for the change of a player's nametag.
      */
     public enum NametagChangeReason {
-        SET_PREFIX, SET_SUFFIX, GROUP_NODE, CUSTOM
+        SET_PREFIX, SET_SUFFIX, CUSTOM
     }
 }

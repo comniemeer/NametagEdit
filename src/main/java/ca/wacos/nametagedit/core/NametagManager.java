@@ -20,17 +20,17 @@ import org.bukkit.entity.Player;
  * @author Levi Webb
  * 
  */
-@SuppressWarnings("all")
 public class NametagManager {
 
-    // Prefix to append to all team names (nothing to do with prefix/suffix)
+    // Prefix to prepend to all team names (nothing to do with prefix/suffix)
     private static final String TEAM_NAME_PREFIX = "NTE";
 
     private static List<Integer> list = new ArrayList<Integer>();
 
     private static HashMap<TeamHandler, List<String>> teams = new HashMap<TeamHandler, List<String>>();
 
-    private static void addToTeam(TeamHandler team, String player) {
+    @SuppressWarnings("deprecation")
+	private static void addToTeam(TeamHandler team, String player) {
         removeFromTeam(player);
         List<String> list = teams.get(team);
         if (list != null) {
@@ -66,7 +66,8 @@ public class NametagManager {
         teams.remove(team);
     }
 
-    private static TeamHandler removeFromTeam(String player) {
+    @SuppressWarnings("deprecation")
+	private static TeamHandler removeFromTeam(String player) {
         for (TeamHandler team : teams.keySet().toArray(
                 new TeamHandler[teams.size()])) {
             List<String> list = teams.get(team);

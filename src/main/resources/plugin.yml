@@ -1,9 +1,6 @@
 name: NametagEdit
+version: ${project.version}
+authors: [wacossusca34, sgtcaze, sanjay900, comniemeer]
+description: NametagEdit offers a great API for changing player pre- and suffixes
+
 main: ca.wacos.nametagedit.NametagEdit
-version: 3.0
-description: NametagEdit
-authors: [wacossusca34, sgtcaze, sanjay900]
-commands:
-  ne:
-    description: NametagEdit commands
-    aliases: [nte, nametagedit]
