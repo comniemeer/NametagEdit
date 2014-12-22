@@ -26,19 +26,16 @@ public class NametagAPI {
      *            the prefix to use
      */
     public static void setPrefix(final String player, final String prefix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player),
-                                trim(prefix), "", NametagChangeType.SOFT,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.update(player, trim(prefix), "");
-                        }
-                    }
-                });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), trim(prefix), "", NametagChangeType.SOFT, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.update(player, trim(prefix), "");
+                }
+            }
+        });
     }
 
     /**
@@ -52,19 +49,16 @@ public class NametagAPI {
      *            the suffix to use
      */
     public static void setSuffix(final String player, final String suffix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player), "",
-                                trim(suffix), NametagChangeType.SOFT,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.update(player, "", trim(suffix));
-                        }
-                    }
-                });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), "", trim(suffix), NametagChangeType.SOFT, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.update(player, "", trim(suffix));
+                }   
+            }
+        });
     }
 
     /**
@@ -81,23 +75,17 @@ public class NametagAPI {
      * @param suffix
      *            the suffix to use
      */
-    public static void setNametagHard(final String player, final String prefix,
-            final String suffix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player),
-                                trim(prefix), trim(suffix),
-                                NametagChangeType.HARD,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.overlap(player, trim(prefix),
-                                    trim(suffix));
-                        }
-                    }
-                });
+    public static void setNametagHard(final String player, final String prefix, final String suffix) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), trim(prefix), trim(suffix), NametagChangeType.HARD, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.overlap(player, trim(prefix), trim(suffix));
+                }
+            }
+        });
     }
 
     /**
@@ -113,23 +101,17 @@ public class NametagAPI {
      * @param suffix
      *            the suffix to use
      */
-    public static void setNametagSoft(final String player, final String prefix,
-            final String suffix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player),
-                                trim(prefix), trim(suffix),
-                                NametagChangeType.SOFT,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.update(player, trim(prefix),
-                                    trim(suffix));
-                        }
-                    }
-                });
+    public static void setNametagSoft(final String player, final String prefix,  final String suffix) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), trim(prefix), trim(suffix), NametagChangeType.SOFT, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.update(player, trim(prefix), trim(suffix));
+                }
+            }
+        });
     }
 
     /**
@@ -151,23 +133,17 @@ public class NametagAPI {
      * @param suffix
      *            the suffix to use
      */
-    public static void updateNametagHard(final String player,
-            final String prefix, final String suffix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player),
-                                trim(prefix), trim(suffix),
-                                NametagChangeType.HARD,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.overlap(player, trim(prefix),
-                                    trim(suffix));
-                        }
-                    }
-                });
+    public static void updateNametagHard(final String player, final String prefix, final String suffix) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), trim(prefix), trim(suffix), NametagChangeType.HARD, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.overlap(player, trim(prefix), trim(suffix));
+                }
+            }
+        });
     }
 
     /**
@@ -188,23 +164,17 @@ public class NametagAPI {
      * @param suffix
      *            the suffix to use
      */
-    public static void updateNametagSoft(final String player,
-            final String prefix, final String suffix) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                NametagEdit.getInstance(), new Runnable() {
-                    public void run() {
-                        NametagChangeEvent e = new NametagChangeEvent(player,
-                                getPrefix(player), getSuffix(player),
-                                trim(prefix), trim(suffix),
-                                NametagChangeType.SOFT,
-                                NametagChangeReason.CUSTOM);
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                        if (!e.isCancelled()) {
-                            NametagManager.update(player, trim(prefix),
-                                    trim(suffix));
-                        }
-                    }
-                });
+    public static void updateNametagSoft(final String player, final String prefix, final String suffix) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(NametagEdit.getInstance(), new Runnable(){
+            @Override
+            public void run() {
+                NametagChangeEvent e = new NametagChangeEvent(player, getPrefix(player), getSuffix(player), trim(prefix), trim(suffix), NametagChangeType.SOFT, NametagChangeReason.CUSTOM);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    NametagManager.update(player, trim(prefix), trim(suffix));
+                }
+            }
+        });
     }
 
     /**

@@ -1,0 +1,133 @@
+= Changelogs
+
+== v3.0-beta
+
+@sgtcaze
+=== Fixes
+*Compatability for 1.8 Spigot
+
+=== Improvements
+*Cleaned up all tasks
+*Cleaned up classes in general
+
+=== Deleted
+*MySQL handler class
+
+== v3.0-pre
+
+@sgtcaze
+
+=== New Features
+*Temporary file handler replacement (so we didn't use net.minecraft.server FileUtils in Craftbukkit)
+
+=== Improvements
+*Collapsed SQL queries to be more compact
+*Improve Class names for readability
+
+=== Deleted
+*InventoryClickEvent and the GUI sorter to reduce Bukkit dependency (we are going to port NametagEdit)
+
+== v3.0
+
+@sgtcaze
+=== Fixes
+*Resolved command argument issues that said "An internal error..."
+
+=== Improvements
+*Deleted PlayerLoader/GroupLoader, replace with NTEHandler
+*Deleted NametagUtils class, as most of the functions were for the PlayerLoader/GroupLoader classes
+*Deleted NametagHooKGM and NametagHookPEX because they are redundant, and support would
+never end (i.e. what about bPermissions, zPermissions, YAPP, BukkitPerms, SuperPerms etc.)
+*General cleanup, removed unused methods, switch to dependency injection for some classes
+rather than using static objects/variables
+*Rewrote command class to be less redundant, easier to read, and have more features
+*Deleted the updater class because of version conflicts with dev builds
+*Deleted NameFetcher class because we don't use it anymore
+*Edited pom.xml to reflect no more optional dependencies
+*Removed libs as we no longer use them
+*Simplified MySQL data loading into one class that extends BukkitRunnable
+*getOnlinePlayers() work around
+*Cleaned up command class for readability and speed
+*Cleaned up MySQL queries
+*Removed Herobrine
+
+New Features
+*Add Chat formatter option
+*Added MySQL support with a BoneCP connection pool integration
+*Added /ne groups base command (create groups, alter attributes)
+
+== v2.5.2
+
+@sgtcaze
+=== New Features
+*Updated dependencies
+*Add BETA UUID support for players
+*Change default players.txt for update clarity
+
+== v2.3
+
+@dmhacker
+=== Fixes
+*Fixed NPE being thrown due to null parameters within the API
+
+@sanjay900
+=== Fixes
+*Fixed client crashes on PermissionsEX group compatibility 
+
+== v2.2
+
+@sgtcaze
+=== Improvements
+*Changed up config for clarity on functions
+*Refractor packaging for convention
+
+@sanjay900
+=== Fixes
+*Fixed NPE on PlayerLoader
+
+== v2.1
+
+@sgtcaze
+=== Fixes
+*Removed PlayerDeathEvent manipulation as it did not work
+*Removed section in config for death messages
+
+=== Improvements
+*Deleted ConfigLoader class in favor of YAML (config.yml now instead of config.txt)
+*Comments for different arguments in the Commands to keep track
+*Renamed Packet209Mod class for update clarity (and forseeable changes)
+*Deleted "PluginVersion" as it was used in the previous updater
+*Separated Updater and Metrics into a separate Utilities package
+*Removed unused methods scattered in the plugin
+
+=== New Features
+*Added aliases (/nte and /nametagedit)
+*Added Metrics for statistic collecting
+*New permission: NametagEdit.update *Allows the command sender to update
+*Added when a player with the necessary permission joins, with updater enabled, they will be notified of the available update.
+
+== v2.0
+
+@sgtcaze
+=== Fixes
+*Fixed Diamond Operator error in project building
+
+=== New Features
+*Added configurable option to disable console print
+*Replace updater with newer, Bukkit compliant updater
+
+== v1.9
+
+@sgtcaze
+=== Fixes
+*Update to 1.7.2 as Bukkit changed packet format to "PacketPlayOut"
+
+=== New Features
+*Mavenized with Dependencies for Jenkins CI
+
+@sanjay900
+=== Fixes
+*Fix NPC prefixes on restart as well as NPC names not saving
+
+=== New Features
+*Backwards compatibility (1.5 and 1.6)

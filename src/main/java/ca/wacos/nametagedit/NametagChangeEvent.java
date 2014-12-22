@@ -55,9 +55,7 @@ public class NametagChangeEvent extends Event implements Cancellable {
      * @param reason
      *            the reason why the nametag is being changed.
      */
-    public NametagChangeEvent(String player, String oldPrefix,
-            String oldSuffix, String newPrefix, String newSuffix,
-            NametagChangeType type, NametagChangeReason reason) {
+    public NametagChangeEvent(String player, String oldPrefix, String oldSuffix, String newPrefix, String newSuffix, NametagChangeType type, NametagChangeReason reason) {
         this.player = player;
         this.oldPrefix = oldPrefix;
         this.oldSuffix = oldSuffix;
@@ -197,6 +195,6 @@ public class NametagChangeEvent extends Event implements Cancellable {
      * Represents the reason or cause for the change of a player's nametag.
      */
     public enum NametagChangeReason {
-        SET_PREFIX, SET_SUFFIX, GROUP_NODE, CUSTOM
+        SET_PREFIX, SET_SUFFIX, CUSTOM
     }
 }

@@ -1,85 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>com.wacos</groupId>
-   <artifactId>NametagEdit</artifactId>
-   <version>3.0</version>
-   <packaging>jar</packaging>
-   <name>NametagEdit</name>
-   <url>http://maven.apache.org</url>
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-   </properties>
-   <dependencies>
-      <!-- Spigot -->
-      <dependency>
-         <groupId>org.spigotmc</groupId>
-         <artifactId>spigot</artifactId>
-         <version>1.7.10-R0.1-SNAPSHOT</version>
-         <scope>provided</scope>
-      </dependency>
-      <!-- slf4j -->
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-simple</artifactId>
-         <version>1.7.2</version>
-      </dependency>
-   </dependencies>
-   <repositories>
-      <!-- Spigot
-      <repository>
-         <id>spigot-repo</id>
-         <url>http://repo.md-5.net/content/groups/public/</url>
-      </repository> -->
-   </repositories>
-   <!-- Builds NametagEdit -->
-   <build>
-      <defaultGoal>clean package install</defaultGoal>
-      <finalName>NametagEdit</finalName>
-      <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-      <resources>
-         <resource>
-            <targetPath>.</targetPath>
-            <filtering>true</filtering>
-            <directory>${basedir}/src/main/resources/</directory>
-            <includes>
-               <include>*.*</include>
-            </includes>
-         </resource>
-      </resources>
-      <plugins>
-         <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.4</version>
-            <configuration>
-               <source>1.7</source>
-               <target>1.7</target>
-            </configuration>
-         </plugin>
-         <!-- Compile all Libs -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>2.3</version>
-            <executions>
-               <execution>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>shade</goal>
-                  </goals>
-                  <configuration>
-                     <minimizeJar>true</minimizeJar>
-                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                     <artifactSet>
-                        <includes>
-                           <include>org.slf4j:*</include>
-                           <include>slf4j_simple_1_6_2:*</include>
-                        </includes>
-                     </artifactSet>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.wacos</groupId>
+	<artifactId>NametagEdit</artifactId>
+	<version>3.0-customized</version>
+	<packaging>jar</packaging>
+	<name>NametagEdit</name>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<dependencies>
+		<!-- Spigot -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.7.10-R0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- SLF4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+	</dependencies>
+	
+	<!-- Builds NametagEdit -->
+	<build>
+		<defaultGoal>clean package install</defaultGoal>
+		<finalName>NametagEdit</finalName>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources/</directory>
+				<includes>
+					<include>*.*</include>
+				</includes>
+			</resource>
+		</resources>
+		
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			
+			<!-- Shade plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<minimizeJar>false</minimizeJar>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<artifactSet>
+								<includes>
+									<include>org.slf4j:*</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Release plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<preparationGoals>assembly:assembly</preparationGoals>
+					<goals>assembly:assembly</goals>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
