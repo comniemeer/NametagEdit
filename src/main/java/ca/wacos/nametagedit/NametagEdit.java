@@ -14,33 +14,33 @@ import ca.wacos.nametagedit.events.PlayerJoin;
  * 
  */
 public class NametagEdit extends JavaPlugin {
-
-    private static NametagEdit instance;
-
-    private NametagManager nametagManager;
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        
-        nametagManager = new NametagManager();
-
-        PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new PlayerJoin(), this);
-
-        NametagManager.load();
-    }
-
-    @Override
-    public void onDisable() {
-        NametagManager.reset();
-    }
-
-    public static NametagEdit getInstance() {
-        return instance;
-    }
-
-    public NametagManager getNametagManager() {
-        return nametagManager;
-    }
+	
+	private static NametagEdit instance;
+	
+	private NametagManager nametagManager;
+	
+	@Override
+	public void onEnable() {
+		instance = this;
+		
+		nametagManager = new NametagManager();
+		
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new PlayerJoin(), this);
+		
+		NametagManager.load();
+	}
+	
+	@Override
+	public void onDisable() {
+		NametagManager.reset();
+	}
+	
+	public static NametagEdit getInstance() {
+		return instance;
+	}
+	
+	public NametagManager getNametagManager() {
+		return nametagManager;
+	}
 }
